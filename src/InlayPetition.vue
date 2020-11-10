@@ -3,6 +3,12 @@
 
     <h2 v-if="inlay.initData.publicTitle">{{inlay.initData.publicTitle}}</h2>
 
+    <ometer-petition
+      :count="inlay.initData.count"
+      stmt="Signatures"
+      :target="target"
+      ></ometer-petition>
+
     <form action='#' @submit.prevent="submitForm" v-if="stage === 'form'">
 
       <div class="ipet-2-cols">
@@ -128,13 +134,13 @@
 <script>
 import InlayProgress from './InlayProgress.vue';
 import InlaySocials from './InlaySocials.vue';
-import OmeterSosTree from './OmeterSosTree.vue';
+import OmeterPetition from './OmeterPetition.vue';
 // import 'vue-select/dist/vue-select.css';
 // import vSelect from 'vue-select';
 
 export default {
   props: ['inlay'],
-  components: {InlayProgress, InlaySocials, OmeterSosTree},
+  components: {InlayProgress, InlaySocials, OmeterPetition},
   data() {
     const d = {
       stage: 'form',

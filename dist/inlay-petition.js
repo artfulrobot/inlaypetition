@@ -97,7 +97,13 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _InlayProgress_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./InlayProgress.vue */ "./src/InlayProgress.vue");
 /* harmony import */ var _InlaySocials_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./InlaySocials.vue */ "./src/InlaySocials.vue");
-/* harmony import */ var _OmeterSosTree_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./OmeterSosTree.vue */ "./src/OmeterSosTree.vue");
+/* harmony import */ var _OmeterPetition_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./OmeterPetition.vue */ "./src/OmeterPetition.vue");
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -235,7 +241,7 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     InlayProgress: _InlayProgress_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
     InlaySocials: _InlaySocials_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
-    OmeterSosTree: _OmeterSosTree_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
+    OmeterPetition: _OmeterPetition_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: function data() {
     var d = {
@@ -528,10 +534,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterSosTree.vue?vue&type=script&lang=js&":
-/*!****************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./src/OmeterSosTree.vue?vue&type=script&lang=js& ***!
-  \****************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterPetition.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./src/OmeterPetition.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -546,15 +552,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['count', 'stmt', 'target'],
   data: function data() {
     return {
-      treeAnim: 0,
       animStart: false,
       step: 0,
       containerSize: false,
@@ -562,55 +563,31 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   computed: {
-    trees: function trees() {
-      var max = this.containerSize;
-      var greenTo = parseInt(this.step * max * 0.7);
-      var t = [];
-
-      for (var i = 0; i < max; i++) {
-        t.push(i > greenTo ? 'faded' : '');
-      }
-
-      return t;
+    barStyle: function barStyle() {
+      return {
+        width: this.step * this.count / this.target * 100 + '%'
+      };
     }
   },
   mounted: function mounted() {
-    var _this = this;
-
-    this.handleWindowResize();
-    window.addEventListener('resize', function (e) {
-      if (_this.debounce) {
-        window.clearTimeout(_this.debounce);
-      }
-
-      _this.debounce = window.setTimeout(_this.handleWindowResize.bind(_this), 300);
-    });
     var observer = new IntersectionObserver(this.handleIntersectionChange.bind(this), {
       // root: this.$refs.treesContainer,
       // rootMargin: '0px',
       threshold: 1.0
     });
-    observer.observe(this.$refs.treesContainer);
+    observer.observe(this.$refs.ometer);
   },
   methods: {
     handleIntersectionChange: function handleIntersectionChange(entries, observer) {
-      var _this2 = this;
+      var _this = this;
 
       console.log("handleIntersectionChange");
       entries.forEach(function (e) {
         if (e.isIntersecting) {
-          _this2.animStart = false;
-          window.requestAnimationFrame(_this2.animate.bind(_this2));
+          _this.animStart = false;
+          window.requestAnimationFrame(_this.animate.bind(_this));
         }
       });
-    },
-    handleWindowResize: function handleWindowResize(e) {
-      this.debounce = false; // Allow 1.5rem for a tree
-
-      this.containerSize = Math.floor(this.$refs.treesContainer.clientWidth / this.convertRemToPixels(1.5));
-    },
-    convertRemToPixels: function convertRemToPixels(rem) {
-      return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
     },
     animate: function animate(t) {
       if (!this.animStart) {
@@ -686,10 +663,10 @@ exports.push([module.i, "ul.inlay-socials {\n  list-style: none;\n  margin: 0 -1
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterSosTree.vue?vue&type=style&index=0&lang=scss&":
-/*!***************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/sass-loader/dist/cjs.js??ref--6-3!./node_modules/vue-loader/lib??vue-loader-options!./src/OmeterSosTree.vue?vue&type=style&index=0&lang=scss& ***!
-  \***************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterPetition.vue?vue&type=style&index=0&lang=scss&":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/sass-loader/dist/cjs.js??ref--6-3!./node_modules/vue-loader/lib??vue-loader-options!./src/OmeterPetition.vue?vue&type=style&index=0&lang=scss& ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -698,7 +675,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, ".treeometer {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: center;\n  background: #ffc839;\n  padding: 1rem;\n  color: white;\n  margin-bottom: 1rem;\n  font-weight: bold;\n}\n.treeometer .treeometer__trees {\n  flex: 0 0 100%;\n  display: flex;\n  justify-content: space-between;\n}\n.treeometer .treeometer__trees .faded {\n  opacity: 0.2;\n}\n.treeometer .treeometer__bignum {\n  flex: 0 0 auto;\n  padding-right: 1rem;\n  font-size: 3rem;\n}\n.treeometer .treeometer__words {\n  flex: 0 1 auto;\n  font-size: 2rem;\n}\n", ""]);
+exports.push([module.i, ".ipetometer {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: center;\n  background: #fee;\n  padding: 1rem;\n  color: white;\n  margin-bottom: 1rem;\n  font-weight: bold;\n}\n.ipetometer .ipetometer__domain {\n  flex: 0 0 100%;\n  background: #eee;\n}\n.ipetometer .ipetometer__bar {\n  background: #fc0;\n  height: 2rem;\n}\n.ipetometer .ipetometer__bignum {\n  flex: 0 0 auto;\n  padding-right: 1rem;\n  font-size: 3rem;\n}\n.ipetometer .ipetometer__words {\n  flex: 0 1 auto;\n  font-size: 2rem;\n}\n", ""]);
 
 // exports
 
@@ -1275,15 +1252,15 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterSosTree.vue?vue&type=style&index=0&lang=scss&":
-/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/sass-loader/dist/cjs.js??ref--6-3!./node_modules/vue-loader/lib??vue-loader-options!./src/OmeterSosTree.vue?vue&type=style&index=0&lang=scss& ***!
-  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterPetition.vue?vue&type=style&index=0&lang=scss&":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/sass-loader/dist/cjs.js??ref--6-3!./node_modules/vue-loader/lib??vue-loader-options!./src/OmeterPetition.vue?vue&type=style&index=0&lang=scss& ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../node_modules/css-loader!../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../node_modules/postcss-loader/src??ref--6-2!../node_modules/sass-loader/dist/cjs.js??ref--6-3!../node_modules/vue-loader/lib??vue-loader-options!./OmeterSosTree.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterSosTree.vue?vue&type=style&index=0&lang=scss&");
+var content = __webpack_require__(/*! !../node_modules/css-loader!../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../node_modules/postcss-loader/src??ref--6-2!../node_modules/sass-loader/dist/cjs.js??ref--6-3!../node_modules/vue-loader/lib??vue-loader-options!./OmeterPetition.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterPetition.vue?vue&type=style&index=0&lang=scss&");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -1912,6 +1889,14 @@ var render = function() {
         ? _c("h2", [_vm._v(_vm._s(_vm.inlay.initData.publicTitle))])
         : _vm._e(),
       _vm._v(" "),
+      _c("ometer-petition", {
+        attrs: {
+          count: _vm.inlay.initData.count,
+          stmt: "Signatures",
+          target: _vm.target
+        }
+      }),
+      _vm._v(" "),
       _vm.stage === "form"
         ? _c(
             "form",
@@ -2085,7 +2070,8 @@ var render = function() {
             1
           )
         : _vm._e()
-    ]
+    ],
+    1
   )
 }
 var staticRenderFns = []
@@ -2302,10 +2288,10 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterSosTree.vue?vue&type=template&id=4626c95c&":
-/*!********************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./src/OmeterSosTree.vue?vue&type=template&id=4626c95c& ***!
-  \********************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterPetition.vue?vue&type=template&id=a34b4fde&":
+/*!*********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./src/OmeterPetition.vue?vue&type=template&id=a34b4fde& ***!
+  \*********************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -2317,23 +2303,18 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "treeometer" }, [
-    _c("span", { staticClass: "treeometer__bignum" }, [
+  return _c("div", { ref: "ometer", staticClass: "ipetometer" }, [
+    _c("span", { staticClass: "ipetometer__bignum" }, [
       _vm._v(_vm._s(_vm.count.toLocaleString()))
     ]),
     _vm._v(" "),
-    _c("span", { staticClass: "treeometer__words" }, [
-      _vm._v(_vm._s(_vm.stmt))
+    _c("span", { staticClass: "ipetometer__words" }, [
+      _vm._v(_vm._s(_vm.stmt) + " (Target " + _vm._s(_vm.target) + ")")
     ]),
     _vm._v(" "),
-    _c(
-      "div",
-      { ref: "treesContainer", staticClass: "treeometer__trees" },
-      _vm._l(_vm.trees, function(c, i) {
-        return _c("span", { key: i, class: c }, [_vm._v("🌲")])
-      }),
-      0
-    )
+    _c("div", { staticClass: "ipetometer__domain" }, [
+      _c("div", { staticClass: "ipetometer__bar", style: _vm.barStyle })
+    ])
   ])
 }
 var staticRenderFns = []
@@ -14733,18 +14714,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/OmeterSosTree.vue":
-/*!*******************************!*\
-  !*** ./src/OmeterSosTree.vue ***!
-  \*******************************/
+/***/ "./src/OmeterPetition.vue":
+/*!********************************!*\
+  !*** ./src/OmeterPetition.vue ***!
+  \********************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _OmeterSosTree_vue_vue_type_template_id_4626c95c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./OmeterSosTree.vue?vue&type=template&id=4626c95c& */ "./src/OmeterSosTree.vue?vue&type=template&id=4626c95c&");
-/* harmony import */ var _OmeterSosTree_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./OmeterSosTree.vue?vue&type=script&lang=js& */ "./src/OmeterSosTree.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _OmeterSosTree_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./OmeterSosTree.vue?vue&type=style&index=0&lang=scss& */ "./src/OmeterSosTree.vue?vue&type=style&index=0&lang=scss&");
+/* harmony import */ var _OmeterPetition_vue_vue_type_template_id_a34b4fde___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./OmeterPetition.vue?vue&type=template&id=a34b4fde& */ "./src/OmeterPetition.vue?vue&type=template&id=a34b4fde&");
+/* harmony import */ var _OmeterPetition_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./OmeterPetition.vue?vue&type=script&lang=js& */ "./src/OmeterPetition.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _OmeterPetition_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./OmeterPetition.vue?vue&type=style&index=0&lang=scss& */ "./src/OmeterPetition.vue?vue&type=style&index=0&lang=scss&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -14755,9 +14736,9 @@ __webpack_require__.r(__webpack_exports__);
 /* normalize component */
 
 var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
-  _OmeterSosTree_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _OmeterSosTree_vue_vue_type_template_id_4626c95c___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _OmeterSosTree_vue_vue_type_template_id_4626c95c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _OmeterPetition_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _OmeterPetition_vue_vue_type_template_id_a34b4fde___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _OmeterPetition_vue_vue_type_template_id_a34b4fde___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
   null,
@@ -14767,54 +14748,54 @@ var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "src/OmeterSosTree.vue"
+component.options.__file = "src/OmeterPetition.vue"
 /* harmony default export */ __webpack_exports__["default"] = (component.exports);
 
 /***/ }),
 
-/***/ "./src/OmeterSosTree.vue?vue&type=script&lang=js&":
-/*!********************************************************!*\
-  !*** ./src/OmeterSosTree.vue?vue&type=script&lang=js& ***!
-  \********************************************************/
+/***/ "./src/OmeterPetition.vue?vue&type=script&lang=js&":
+/*!*********************************************************!*\
+  !*** ./src/OmeterPetition.vue?vue&type=script&lang=js& ***!
+  \*********************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterSosTree_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../node_modules/babel-loader/lib??ref--4-0!../node_modules/vue-loader/lib??vue-loader-options!./OmeterSosTree.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterSosTree.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterSosTree_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterPetition_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../node_modules/babel-loader/lib??ref--4-0!../node_modules/vue-loader/lib??vue-loader-options!./OmeterPetition.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterPetition.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterPetition_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
-/***/ "./src/OmeterSosTree.vue?vue&type=style&index=0&lang=scss&":
-/*!*****************************************************************!*\
-  !*** ./src/OmeterSosTree.vue?vue&type=style&index=0&lang=scss& ***!
-  \*****************************************************************/
+/***/ "./src/OmeterPetition.vue?vue&type=style&index=0&lang=scss&":
+/*!******************************************************************!*\
+  !*** ./src/OmeterPetition.vue?vue&type=style&index=0&lang=scss& ***!
+  \******************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_sass_loader_dist_cjs_js_ref_6_3_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterSosTree_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../node_modules/style-loader!../node_modules/css-loader!../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../node_modules/postcss-loader/src??ref--6-2!../node_modules/sass-loader/dist/cjs.js??ref--6-3!../node_modules/vue-loader/lib??vue-loader-options!./OmeterSosTree.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterSosTree.vue?vue&type=style&index=0&lang=scss&");
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_sass_loader_dist_cjs_js_ref_6_3_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterSosTree_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_sass_loader_dist_cjs_js_ref_6_3_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterSosTree_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_sass_loader_dist_cjs_js_ref_6_3_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterSosTree_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_sass_loader_dist_cjs_js_ref_6_3_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterSosTree_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_sass_loader_dist_cjs_js_ref_6_3_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterPetition_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../node_modules/style-loader!../node_modules/css-loader!../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../node_modules/postcss-loader/src??ref--6-2!../node_modules/sass-loader/dist/cjs.js??ref--6-3!../node_modules/vue-loader/lib??vue-loader-options!./OmeterPetition.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterPetition.vue?vue&type=style&index=0&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_sass_loader_dist_cjs_js_ref_6_3_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterPetition_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_sass_loader_dist_cjs_js_ref_6_3_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterPetition_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_sass_loader_dist_cjs_js_ref_6_3_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterPetition_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_sass_loader_dist_cjs_js_ref_6_3_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterPetition_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 
 
 /***/ }),
 
-/***/ "./src/OmeterSosTree.vue?vue&type=template&id=4626c95c&":
-/*!**************************************************************!*\
-  !*** ./src/OmeterSosTree.vue?vue&type=template&id=4626c95c& ***!
-  \**************************************************************/
+/***/ "./src/OmeterPetition.vue?vue&type=template&id=a34b4fde&":
+/*!***************************************************************!*\
+  !*** ./src/OmeterPetition.vue?vue&type=template&id=a34b4fde& ***!
+  \***************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterSosTree_vue_vue_type_template_id_4626c95c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../node_modules/vue-loader/lib??vue-loader-options!./OmeterSosTree.vue?vue&type=template&id=4626c95c& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterSosTree.vue?vue&type=template&id=4626c95c&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterSosTree_vue_vue_type_template_id_4626c95c___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterPetition_vue_vue_type_template_id_a34b4fde___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../node_modules/vue-loader/lib??vue-loader-options!./OmeterPetition.vue?vue&type=template&id=a34b4fde& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./src/OmeterPetition.vue?vue&type=template&id=a34b4fde&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterPetition_vue_vue_type_template_id_a34b4fde___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterSosTree_vue_vue_type_template_id_4626c95c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_OmeterPetition_vue_vue_type_template_id_a34b4fde___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
