@@ -231,6 +231,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
  // import 'vue-select/dist/vue-select.css';
@@ -618,7 +632,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, ".inlay-petition .ipet-2-cols {\n  margin-left: -1rem;\n  margin-right: -1rem;\n  display: flex;\n  flex-wrap: wrap;\n}\n.inlay-petition .ipet-2-cols > div {\n  flex: 1 0 18rem;\n  padding: 0 1rem;\n}\n.inlay-petition .ipet-input-wrapper {\n  margin-bottom: 1rem;\n}\n.inlay-petition input[type=\"text\"],\n.inlay-petition input[type=\"email\"],\n.inlay-petition label {\n  padding: 0.75rem 1rem;\n  line-height: 1;\n  margin: 0;\n  font-size: 1.1rem;\n}\n.inlay-petition label {\n  display: block;\n}\n.inlay-petition input[type=\"text\"],\n.inlay-petition input[type=\"email\"] {\n  background: white;\n}\n.inlay-petition .ipet-submit {\n  text-align: center;\n}\n.inlay-petition .ipet-submit button {\n  font-size: 1.1rem;\n}\n", ""]);
+exports.push([module.i, ".inlay-petition {\n  background-color: #f5f5f5;\n  padding: 1rem;\n}\n.inlay-petition, .inlay-petition * {\n  box-sizing: border-box;\n}\n.inlay-petition > h2 {\n  margin-top: 0;\n}\n.inlay-petition .ipet-2-cols {\n  margin-left: -1rem;\n  margin-right: -1rem;\n  display: flex;\n  flex-wrap: wrap;\n}\n.inlay-petition .ipet-2-cols > div {\n  flex: 1 0 18rem;\n  padding: 0 1rem;\n}\n.inlay-petition .ipet-input-wrapper {\n  margin-bottom: 1rem;\n}\n.inlay-petition input[type=\"text\"],\n.inlay-petition input[type=\"email\"],\n.inlay-petition label {\n  padding: 0.75rem 1rem;\n  line-height: 1;\n  margin: 0;\n  font-size: 1.1rem;\n}\n.inlay-petition label {\n  display: block;\n}\n.inlay-petition input[type=\"text\"],\n.inlay-petition input[type=\"email\"] {\n  background: white;\n  width: 100%;\n}\n.inlay-petition .ipet-submit {\n  text-align: center;\n}\n.inlay-petition .ipet-submit button {\n  font-size: 1.1rem;\n}\n", ""]);
 
 // exports
 
@@ -675,7 +689,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, ".ipetometer {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: center;\n  background: #fee;\n  padding: 1rem;\n  color: white;\n  margin-bottom: 1rem;\n  font-weight: bold;\n}\n.ipetometer .ipetometer__domain {\n  flex: 0 0 100%;\n  background: #eee;\n}\n.ipetometer .ipetometer__bar {\n  background: #fc0;\n  height: 2rem;\n}\n.ipetometer .ipetometer__bignum {\n  flex: 0 0 auto;\n  padding-right: 1rem;\n  font-size: 3rem;\n}\n.ipetometer .ipetometer__words {\n  flex: 0 1 auto;\n  font-size: 2rem;\n}\n", ""]);
+exports.push([module.i, ".ipetometer {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  background: #0967CB;\n  padding: 1rem;\n  color: white;\n  margin-bottom: 1rem;\n  font-weight: bold;\n}\n.ipetometer .ipetometer__domain {\n  flex: 0 0 100%;\n  background: #eee;\n}\n.ipetometer .ipetometer__bar {\n  background: #fc0;\n  height: 2rem;\n}\n.ipetometer .ipetometer__bignum {\n  flex: 0 0 auto;\n  padding-right: 1rem;\n  font-size: 3rem;\n}\n.ipetometer .ipetometer__words {\n  flex: 0 1 auto;\n  font-size: 1rem;\n}\n", ""]);
 
 // exports
 

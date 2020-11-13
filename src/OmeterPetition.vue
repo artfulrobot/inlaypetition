@@ -58,12 +58,14 @@ export default {
 }
 </script>
 <style lang="scss">
+@import 'konp';
+
 .ipetometer {
   display: flex;
   flex-wrap:wrap;
   align-items: center;
-  justify-content: center;
-  background: #fee;
+  justify-content: space-between;
+  background: $blue;
   padding: 1rem;
   color: white;
   margin-bottom: 1rem;
@@ -85,7 +87,7 @@ export default {
   }
   .ipetometer__words {
     flex: 0 1 auto;
-    font-size: 2rem;
+    font-size: 1rem;
   }
 }
 </style>

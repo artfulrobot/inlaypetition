@@ -88,6 +88,19 @@
 </template>
 <style lang="scss">
 .inlay-petition {
+  @import 'konp';
+
+  background-color: $lightGrey;
+  padding: 1rem;
+
+  &, * {
+    box-sizing: border-box;
+  }
+
+  &>h2 {
+    margin-top: 0;
+  }
+
   .ipet-2-cols {
     margin-left: -1rem;
     margin-right: -1rem;
@@ -120,6 +133,7 @@
   input[type="email"]
   {
     background: white;
+    width: 100%;
   }
 
   .ipet-submit {
