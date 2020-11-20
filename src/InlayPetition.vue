@@ -10,6 +10,7 @@
       ></ometer-petition>
 
     <form action='#' @submit.prevent="submitForm" v-if="stage === 'form'">
+      <div class="ipet-intro" v-html="inlay.initData.introHTML" v-if="inlay.initData.introHTML"></div>
 
       <div class="ipet-2-cols">
         <div class="ipet-input-wrapper">
@@ -51,6 +52,36 @@
           />
       </div>
 
+      <div class="ipet-preoptin"
+        v-if="inlay.initData.preOptinHTML"
+        v-html="inlay.initData.preOptinHTML"></div>
+
+      <div class="ipet-optins">
+        <div class="option">
+          <input type="radio"
+                 name="optin"
+                 required
+                 :id="myId + 'ipet-optin-yes'"
+                 value="yes"
+                 v-model="optin"
+                 />
+          <label :for="myId + 'ipet-optin-yes'"> {{inlay.initData.optinYesText}}</label>
+        </div>
+        <div class="option">
+          <input type="radio"
+                 name="optin"
+                 required
+                 :id="myId + 'ipet-optin-no'"
+                 value="no"
+                 v-model="optin"
+                 />
+          <label :for="myId + 'ipet-optin-no'"> {{inlay.initData.optinNoText}}</label>
+        </div>
+      </div>
+
+      <div class="ipet-smallprint"
+        v-if="inlay.initData.smallprintHTML"
+        v-html="inlay.initData.smallprintHTML"></div>
       <!--
       <div v-if="inlay.initData.phoneAsk">
         <label :for="myId + 'phone'" >Phone</label>
@@ -65,10 +96,6 @@
       </div>
       -->
 
-      <div class="ipet-smallprint"
-        v-if="inlay.initData.smallprintHTML"
-        v-html="inlay.initData.smallprintHTML"></div>
-
       <div class="ipet-submit">
         <button
          @click="wantsToSubmit"
@@ -80,9 +107,18 @@
 
     </form>
 
-    <div v-if="stage === 'thanks'">
-      <div v-html="inlay.initData.webThanksHTML"></div>
-      <inlay-socials :socials="inlay.initData.socials" icons="1"></inlay-socials>
+    <div v-if="stage === 'social'">
+      <div v-html="inlay.initData.shareAskHTML"></div>
+      <inlay-socials
+        :socials="inlay.initData.socials"
+        icons="1"
+        @clicked="stage='final'"
+        ></inlay-socials>
+      <p><a href @click.prevent="stage='final'">Skip</a></p>
+    </div>
+
+    <div v-if="stage === 'final'">
+      <div v-html="inlay.initData.finalHTML"></div>
     </div>
   </div>
 </template>
@@ -119,7 +155,6 @@
   input[type="text"],
   input[type="email"],
   label {
-    padding: 0.75rem 1rem;
     line-height:1;
     margin: 0;
     font-size: 1.1rem;
@@ -127,13 +162,26 @@
 
   label {
     display: block;
+    padding: 0.75rem 0;
   }
 
   input[type="text"],
   input[type="email"]
   {
+    padding: 0.75rem 1rem;
     background: white;
     width: 100%;
+  }
+
+  .ipet-optins .option {
+    position: relative;
+    margin-left: 2rem;
+
+    input[type="radio"] {
+      position: absolute;
+      margin-left: -2rem;
+      margin-top: 0.75rem;
+    }
   }
 
   .ipet-submit {
@@ -163,17 +211,25 @@ export default {
       first_name: '',
       last_name: '',
       email: '',
-      phone: ''
+      phone: '',
+      optin: '',
     };
     return d;
   },
   computed: {
     target() {
       // always at 70%
-      return Math.floor((this.inlay.initData.count / 0.7) / 1000) * 1000 + 1000;
+      var chunk = 10;
+      if (this.inlay.initData.count > 1000) {
+        chunk = 1000;
+      }
+      else if (this.inlay.initData.count > 100) {
+        chunk = 100;
+      }
+      return Math.floor((this.inlay.initData.count / 0.7) / chunk) * chunk + chunk;
     },
     countSigners() {
-      return this.inlay.initData.count + (this.stage === 'thanks' ? 1 : 0);
+      return this.inlay.initData.count + (this.stage !== 'form' ? 1 : 0);
     }
   },
   methods: {
@@ -218,7 +274,9 @@ export default {
           if (r.error) {
             throw (r.error);
           }
-          this.stage = 'thanks';
+          this.stage = 'social';
+          // Increment totals.
+          this.inlay.initData.count += 1;
           progress.cancelTimer();
         })
         .catch(e => {

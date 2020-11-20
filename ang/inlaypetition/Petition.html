@@ -3,157 +3,201 @@
 
   <form name="inlayForm" crm-ui-id-scope>
 
-    <div crm-ui-field="{name: 'inlayForm.name', title: ts('Name'), help: hs('inlay_name')}">
-      <input
-        crm-ui-id="inlayForm.name"
-        name="name"
-        ng-model="inlay.name"
-        class="crm-form-text"
-        placeholder="{{ts('e.g. 2020-11 Biden/NHS')}}"
-        />
-    </div>
 
-    <div crm-ui-field="{name: 'inlayForm.publicTitle', title: ts('Public Title')}">
-      <input
-        crm-ui-id="inlayForm.publicTitle"
-        name="publicTitle"
-        ng-model="inlay.config.publicTitle"
-        class="crm-form-text"
-        placeholder="{{ts('e.g. Stop Biden Trumping our NHS')}}"
-        />
-    </div>
+    <div crm-ui-accordion="{title: ts('Titles'), collapsed: false}">
 
-    <!--
-    <div crm-ui-field="{name: 'inlayForm.instructionsHTML', title: ts('InstructionsHTML for user about the message field')}">
-      <textarea
-        crm-ui-id="inlayForm.instructionsHTML"
-        crm-ui-richtext
-        name="instructionsHTML"
-        ng-model="inlay.config.instructionsHTML"
-        class="crm-form-text"
-        ></textarea>
-    </div>
-
-    <div crm-ui-field="{name: 'inlayForm.defaultMessage', title: ts('Default message (optional, useful for hinting what they should write.)')}">
-      <textarea
-        crm-ui-id="inlayForm.defaultMessage"
-        name="defaultMessage"
-        ng-model="inlay.config.defaultMessage"
-        ></textarea>
-    </div>
-
-    <div crm-ui-field="{name: 'inlayForm.phoneAsk', title: ts('Collect phone number?')}">
-      <input
-        type="checkbox"
-        crm-ui-id="inlayForm.phoneAsk"
-        name="phoneAsk"
-        ng-model="inlay.config.phoneAsk"
-        />
-    </div>
-    -->
-
-    <div crm-ui-field="{name: 'inlayForm.smallprintHTML', title: ts('Text by submit button, e.g. explaining GDPR')}">
-      <textarea
-        crm-ui-id="inlayForm.smallprintHTML"
-        crm-ui-richtext
-        name="smallprintHTML"
-        ng-model="inlay.config.smallprintHTML"
-        class="crm-form-text"
-        ></textarea>
-    </div>
-
-    <div crm-ui-field="{name: 'inlayForm.submitButtonText', title: ts('submit button text')}">
-      <input
-        crm-ui-id="inlayForm.submitButtonText"
-        name="submitButtonText"
-        ng-model="inlay.config.submitButtonText"
-        class="crm-form-text"
-        placeholder="{{ts('e.g. Sign up')}}"
-        />
-    </div>
-
-    <div crm-ui-field="{name: 'inlayForm.webThanksHTML', title: ts('Thank you text for website')}">
-      <textarea
-        crm-ui-id="inlayForm.webThanksHTML"
-        crm-ui-richtext
-        name="webThanksHTML"
-        ng-model="inlay.config.webThanksHTML"
-        class="crm-form-text"
-        ></textarea>
-    </div>
-
-    <div crm-ui-field="{name: 'inlayForm.mailingGroup', title: ts('Mailing Group to add contact to')}">
-      <select
-        crm-ui-select="{allowClear:true, dropdownAutoWidth: true}"
-        ng-model="inlay.config.mailingGroup"
-        name="mailingGroup"
-        style="width: 100%"
-        >
-        <option value="">(do not add them to a group)</option>
-        <option ng-repeat="g in mailingGroups"
-                ng-value="g.id">{{g.title}}</option>
-      </select>
-    </div>
-
-    <h3>Social Media</h3>
-    <ul>
-      <li ng-repeat="(i, sm) in smShares"
-        >
+      <div crm-ui-field="{name: 'inlayForm.name', title: ts('Name'), help: hs('inlay_name')}">
         <input
-          type="checkbox"
-          name="{{sm.name}}"
-          id="{{'share-' + sm.name}}"
-          ng-model="smShares[i].active"
+          crm-ui-id="inlayForm.name"
+          name="name"
+          ng-model="inlay.name"
+          class="crm-form-text"
+          placeholder="{{ts('e.g. 2020-11 Biden/NHS')}}"
           />
-        <label for="{{'share-' + sm.name}}">{{ts('Share on %1', {'1': sm.label})}}</label>
-        <a href ng-click="smShares.splice(i-1,0, smShares.splice(i,1)[0])"
-                ng-show="i>0"
-          >↑</a>
-        <a href
-          ng-show="i<smShares.length -1"
-          ng-click="smShares.splice(i+1, 0, smShares.splice(i,1)[0])" >↓</a>
-      </li>
-    </ul>
+        <p>This is an internal name. It is used as the subject for the activity added when someone signs. It should uniquely identify this petition.</p>
+      </div>
 
-    <div crm-ui-field="{name: 'inlayForm.tweet', title: ts('Suggested tweet')}"
-         ng-show="smActive('twitter')"
-      >
-      <textarea
-        crm-ui-id="inlayForm.tweet"
-        name="tweet"
-        ng-model="inlay.config.tweet"
-        class="crm-form-text"
-        placeholder="{{ts('e.g. Hey everybody, do what I did.')}}"
-        ></textarea>
+      <div crm-ui-field="{name: 'inlayForm.publicTitle', title: ts('Public Title')}">
+        <input
+          crm-ui-id="inlayForm.publicTitle"
+          name="publicTitle"
+          ng-model="inlay.config.publicTitle"
+          class="crm-form-text"
+          placeholder="{{ts('e.g. Stop Biden Trumping our NHS')}}"
+          />
+        <p>This will be displayed at the top of the petition throughout the user’s interaction.</p>
+      </div>
+
     </div>
 
-    <div crm-ui-field="{name: 'inlayForm.whatsappText', title: ts('Suggested WhatsApp text')}"
-         ng-show="smActive('whatsapp')"
-       >
-      <textarea
-        crm-ui-id="inlayForm.whatsappText"
-        name="whatsappText"
-        ng-model="inlay.config.whatsappText"
-        class="crm-form-text"
-        placeholder="{{ts('e.g. Hey everybody, do what I did.')}}"
-        ></textarea>
+    <div crm-ui-accordion="{title: ts('Main form'), collapsed: true}">
+
+      <div crm-ui-field="{name: 'inlayForm.introHTML', title: ts('Intro text before the form fields.')}">
+        <textarea
+          crm-ui-id="inlayForm.introHTML"
+          crm-ui-richtext
+          name="introHTML"
+          ng-model="inlay.config.introHTML"
+          class="crm-form-text"
+          ></textarea>
+      </div>
+
+      <!-- not implemented: askPostcode, askPhone -->
+
+      <div crm-ui-field="{name: 'inlayForm.preOptinHTML', title: ts('Optional text before the opt-in options.')}">
+        <textarea
+          crm-ui-id="inlayForm.preOptinHTML"
+          crm-ui-richtext
+          name="preOptinHTML"
+          ng-model="inlay.config.preOptinHTML"
+          class="crm-form-text"
+          ></textarea>
+      </div>
+
+      <div crm-ui-field="{name: 'inlayForm.optinYes', title: ts('Text for YES opt-in')}">
+        <input
+          crm-ui-id="inlayForm.optinYesText"
+          name="sTextubmitButtonText"
+          ng-model="inlay.config.optinYesText"
+          class="crm-form-text"
+          placeholder="{{ts('e.g. Add me to your newsletter')}}"
+          />
+      </div>
+
+      <div crm-ui-field="{name: 'inlayForm.optinNo', title: ts('Text for NO opt-in')}">
+        <input
+          crm-ui-id="inlayForm.optinNoText"
+          name="sTextubmitButtonText"
+          ng-model="inlay.config.optinNoText"
+          class="crm-form-text"
+          placeholder="{{ts('e.g. I’m fine as I am, thanks')}}"
+          />
+      </div>
+
+      <div crm-ui-field="{name: 'inlayForm.smallprintHTML', title: ts('Optional text between opt-in options and submit button.')}">
+        <textarea
+          crm-ui-id="inlayForm.smallprintHTML"
+          crm-ui-richtext
+          name="smallprintHTML"
+          ng-model="inlay.config.smallprintHTML"
+          class="crm-form-text"
+          ></textarea>
+      </div>
+
+
+      <div crm-ui-field="{name: 'inlayForm.submitButtonText', title: ts('submit button text')}">
+        <input
+          crm-ui-id="inlayForm.submitButtonText"
+          name="submitButtonText"
+          ng-model="inlay.config.submitButtonText"
+          class="crm-form-text"
+          placeholder="{{ts('e.g. Sign up')}}"
+          />
+      </div>
+
+
     </div>
 
+    <div crm-ui-accordion="{title: ts('Social Share view'), collapsed: true}">
 
+      <div crm-ui-field="{name: 'inlayForm.shareAskHTML', title: ts('Thank you text for website')}">
+        <textarea
+          crm-ui-id="inlayForm.shareAskHTML"
+          crm-ui-richtext
+          name="shareAskHTML"
+          ng-model="inlay.config.shareAskHTML"
+          class="crm-form-text"
+          ></textarea>
+        <p>This text needs to thank them for having signed the petition, and ask them to share on social media.</p>
+      </div>
 
+      <h3>Social Media</h3>
+      <ul>
+        <li ng-repeat="(i, sm) in smShares"
+          >
+          <input
+            type="checkbox"
+            name="{{sm.name}}"
+            id="{{'share-' + sm.name}}"
+            ng-model="smShares[i].active"
+            />
+          <label for="{{'share-' + sm.name}}">{{ts('Share on %1', {'1': sm.label})}}</label>
+          <a href ng-click="smShares.splice(i-1,0, smShares.splice(i,1)[0])"
+                  ng-show="i>0"
+            >↑</a>
+          <a href
+            ng-show="i<smShares.length -1"
+            ng-click="smShares.splice(i+1, 0, smShares.splice(i,1)[0])" >↓</a>
+        </li>
+      </ul>
 
-    <!--
-    <div crm-ui-field="{name: 'inlayForm.assignee', title: ts('Assign activity to (choose staff member)')}">
-      <input
-        crm-entityref="{entity: 'Contact', select: {allowClear:true}}"
-        crm-ui-id="inlayForm.assignee"
-        name="assignee"
-        ng-model="inlay.config.assignee"
-        />
+      <div crm-ui-field="{name: 'inlayForm.tweet', title: ts('Suggested tweet')}"
+           ng-show="smActive('twitter')"
+        >
+        <textarea
+          crm-ui-id="inlayForm.tweet"
+          name="tweet"
+          ng-model="inlay.config.tweet"
+          class="crm-form-text"
+          placeholder="{{ts('e.g. Hey everybody, do what I did.')}}"
+          ></textarea>
+      </div>
+
+      <div crm-ui-field="{name: 'inlayForm.whatsappText', title: ts('Suggested WhatsApp text')}"
+           ng-show="smActive('whatsapp')"
+         >
+        <textarea
+          crm-ui-id="inlayForm.whatsappText"
+          name="whatsappText"
+          ng-model="inlay.config.whatsappText"
+          class="crm-form-text"
+          placeholder="{{ts('e.g. Hey everybody, do what I did.')}}"
+          ></textarea>
+      </div>
     </div>
-    -->
 
-    <!-- todo email assignee? -->
+    <div crm-ui-accordion="{title: ts('Final view'), collapsed: true}">
+
+      <div crm-ui-field="{name: 'inlayForm.finalHTML', title: ts('Final thank you text')}">
+        <textarea
+          crm-ui-id="inlayForm.finalHTML"
+          crm-ui-richtext
+          name="finalHTML"
+          ng-model="inlay.config.finalHTML"
+          class="crm-form-text"
+          ></textarea>
+        <p>The user may have shared on social media, or may have clicked Skip. You need to thank them and add any final words, e.g. a link to the donate page.</p>
+      </div>
+    </div>
+
+    <div crm-ui-accordion="{title: ts('Processing'), collapsed: true}">
+
+      <div crm-ui-field="{name: 'inlayForm.mailingGroup', title: ts('Mailing Group to add contact to (if they opt in)')}">
+        <select
+          crm-ui-select="{allowClear:true, dropdownAutoWidth: true}"
+          ng-model="inlay.config.mailingGroup"
+          name="mailingGroup"
+          style="width: 100%"
+          >
+          <option value="">(do not add them to a group)</option>
+          <option ng-repeat="g in mailingGroups"
+                  value="{{g.id}}">{{g.title}}</option>
+        </select>
+      </div>
+
+      <div crm-ui-field="{name: 'inlayForm.thanksMsgTplID', title: ts('Thank you email')}">
+        <select
+          crm-ui-select="{allowClear:true, dropdownAutoWidth: true}"
+          ng-model="inlay.config.thanksMsgTplID"
+          name="thanksMsgTplID"
+          style="width: 100%"
+          >
+          <option value="">(do not send an email)</option>
+          <option ng-repeat="g in messageTpls"
+                  value="{{g.id}}">{{g.msg_title}}</option>
+        </select>
+      </div>
+    </div>
 
     <div>
       <button ng-click="save()">{{ts('Save')}}</button>

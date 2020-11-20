@@ -27,15 +27,26 @@ class Petition extends InlayType {
   public static $defaultConfig = [
     // Nb. the inlay's name is used for the petition activity subject.
 
+    // Form
     'publicTitle'      => '',
-    'submitButtonText' => 'Sign',
-    'smallprintHTML'   => NULL,
-    //'phoneAsk'         => TRUE,
-    'webThanksHTML'    => NULL,
     'target'           => NULL,
+    // Page 1
+    'introHTML'        => '',
+    'askPostcode'      => 'no', // no|optional|required
+    'askPhone'         => 'no', // no|optional|required
+    'preOptinHTML'     => '',
+    'optinYesText'     => 'I would like to receive further information from Keep Our NHS Public about its campaigns and activities, in the future',
+    'optinNoText'      => 'I’m happy as I am, thanks',
+    'smallprintHTML'   => NULL,
+    'submitButtonText' => 'Sign',
+    // Page 2 (Social Media ask)
+    'shareAskHTML'     => '<h2>Thanks!</h2><p>Can you share this?</p>',
     'socials'          => ['twitter', 'facebook', 'email', 'whatsapp'],
     'tweet'            => '',
     'whatsappText'     => '',
+    // Page 3
+    'finalHTML'        => '<h2>Thank you</h2><p>Are you able to make a donation to our work?</p>',
+    'thanksMsgTplID'   => NULL,
   ];
 
   /**
@@ -71,7 +82,15 @@ class Petition extends InlayType {
       // Name of global Javascript function used to boot this app.
       'init'             => 'inlayPetitionInit',
     ];
-    foreach (['submitButtonText', 'publicTitle', 'smallprintHTML', 'webThanksHTML',
+    foreach ([
+      // Top bit
+      'publicTitle', 'target',
+      // First view
+      'introHTML', 'askPostcode', 'askPhone', 'preOptinHTML', 'optinYesText', 'optinNoText', 'smallprintHTML', 'submitButtonText',
+      // Social share ask
+      'shareAskHTML', 'socials', 'tweet', 'whatsappText',
+      // Final thanks.
+      'finalHTML',
     ] as $_) {
       $data[$_] = $this->config[$_] ?? '';
     }
@@ -209,7 +228,7 @@ class Petition extends InlayType {
     }
 
     // Finally, use it to process the data.
-    $error = $inlay->processDeferredSubmission($data);
+    $error = static::$instanceCache[$id]->processDeferredSubmission($data);
     if ($error) {
       // ?? How to handle errors.
       // @todo
@@ -239,6 +258,17 @@ class Petition extends InlayType {
     if (!$this->contactAlreadySigned($contactID)) {
       // Not signed yet.
       $this->addSignedPetitionActivity($contactID, $data);
+    }
+
+    // Handle optin.
+    if (!empty($this->config['mailingGroup']) && ($data['optin'] ?? 'no') === 'yes') {
+      // Add contact to the group.
+      $this->addContactToGroup($contactID);
+    }
+
+    // Thank you.
+    if (!empty($this->config['thanksMsgTplID'])) {
+      $this->sendThankYouEmail($contactID, $data);
     }
 
     // No error
@@ -291,6 +321,51 @@ class Petition extends InlayType {
     $result = civicrm_api3('Activity', 'create', $activityCreateParams);
 
     return $result;
+  }
+  /**
+   * Add the contact to the mailing group.
+   *
+   * @param int $contactID
+   */
+  public function addContactToGroup($contactID) {
+    $contacts = [$contactID];
+    $groupID = $this->config['mailingGroup'];
+    \CRM_Contact_BAO_GroupContact::addContactsToGroup($contacts, $groupID, 'Petition', $status='Added');
+  }
+  /**
+   * Send the thank you email to the person who signed up.
+   *
+   * @param int $contactID
+   * @param array $data
+   *    The validated input data.
+   */
+  public function sendThankYouEmail($contactID, $data) {
+
+    $from = civicrm_api3('OptionValue', 'getvalue', [ 'return' => "label", 'option_group_id' => "from_email_address", 'is_default' => 1]);
+
+    // We use the email send in the data, as that's what they'd expect.
+    $params = [
+      'id'             => $this->config['thanksMsgTplID'],
+      'from'           => $from,
+      'to_email'       => $data['email'],
+      'bcc'            => "forums@artfulrobot.uk",
+      'contact_id'     => $contactID,
+      'disable_smarty' => 1,
+      /*
+      'template_params' =>
+      [ 'foo' => 'hello',
+      // {$foo} in templates 'bar' => '123',
+      // {$bar} in templates ],
+      */
+      ];
+
+    try {
+      civicrm_api3('MessageTemplate', 'send', $params);
+    }
+    catch (\Exception $e) {
+      // Log silently.
+      Civi::log()->error("Failed to send MessageTemplate with params: " . json_encode($params, JSON_PRETTY_PRINT) . " Caught " . get_class($e) . ": " . $e->getMessage());
+    }
   }
   /**
    * Validate and clean up input data.

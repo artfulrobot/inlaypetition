@@ -245,6 +245,54 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
  // import 'vue-select/dist/vue-select.css';
@@ -264,17 +312,26 @@ __webpack_require__.r(__webpack_exports__);
       first_name: '',
       last_name: '',
       email: '',
-      phone: ''
+      phone: '',
+      optin: ''
     };
     return d;
   },
   computed: {
     target: function target() {
       // always at 70%
-      return Math.floor(this.inlay.initData.count / 0.7 / 1000) * 1000 + 1000;
+      var chunk = 10;
+
+      if (this.inlay.initData.count > 1000) {
+        chunk = 1000;
+      } else if (this.inlay.initData.count > 100) {
+        chunk = 100;
+      }
+
+      return Math.floor(this.inlay.initData.count / 0.7 / chunk) * chunk + chunk;
     },
     countSigners: function countSigners() {
-      return this.inlay.initData.count + (this.stage === 'thanks' ? 1 : 0);
+      return this.inlay.initData.count + (this.stage !== 'form' ? 1 : 0);
     }
   },
   methods: {
@@ -326,7 +383,9 @@ __webpack_require__.r(__webpack_exports__);
           throw r.error;
         }
 
-        _this.stage = 'thanks';
+        _this.stage = 'social'; // Increment totals.
+
+        _this.inlay.initData.count += 1;
         progress.cancelTimer();
       })["catch"](function (e) {
         console.error(e);
@@ -486,6 +545,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['socials', 'icons'],
   data: function data() {
@@ -566,6 +626,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['count', 'stmt', 'target'],
   data: function data() {
@@ -578,8 +639,10 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     barStyle: function barStyle() {
+      var s = this.step;
+      s = s * s;
       return {
-        width: this.step * this.count / this.target * 100 + '%'
+        width: s * this.count / this.target * 100 + '%'
       };
     }
   },
@@ -595,13 +658,15 @@ __webpack_require__.r(__webpack_exports__);
     handleIntersectionChange: function handleIntersectionChange(entries, observer) {
       var _this = this;
 
-      console.log("handleIntersectionChange");
       entries.forEach(function (e) {
         if (e.isIntersecting) {
-          _this.animStart = false;
-          window.requestAnimationFrame(_this.animate.bind(_this));
+          _this.startAnimation();
         }
       });
+    },
+    startAnimation: function startAnimation() {
+      this.animStart = false;
+      window.requestAnimationFrame(this.animate.bind(this));
     },
     animate: function animate(t) {
       if (!this.animStart) {
@@ -632,7 +697,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, ".inlay-petition {\n  background-color: #f5f5f5;\n  padding: 1rem;\n}\n.inlay-petition, .inlay-petition * {\n  box-sizing: border-box;\n}\n.inlay-petition > h2 {\n  margin-top: 0;\n}\n.inlay-petition .ipet-2-cols {\n  margin-left: -1rem;\n  margin-right: -1rem;\n  display: flex;\n  flex-wrap: wrap;\n}\n.inlay-petition .ipet-2-cols > div {\n  flex: 1 0 18rem;\n  padding: 0 1rem;\n}\n.inlay-petition .ipet-input-wrapper {\n  margin-bottom: 1rem;\n}\n.inlay-petition input[type=\"text\"],\n.inlay-petition input[type=\"email\"],\n.inlay-petition label {\n  padding: 0.75rem 1rem;\n  line-height: 1;\n  margin: 0;\n  font-size: 1.1rem;\n}\n.inlay-petition label {\n  display: block;\n}\n.inlay-petition input[type=\"text\"],\n.inlay-petition input[type=\"email\"] {\n  background: white;\n  width: 100%;\n}\n.inlay-petition .ipet-submit {\n  text-align: center;\n}\n.inlay-petition .ipet-submit button {\n  font-size: 1.1rem;\n}\n", ""]);
+exports.push([module.i, ".inlay-petition {\n  background-color: #f5f5f5;\n  padding: 1rem;\n}\n.inlay-petition, .inlay-petition * {\n  box-sizing: border-box;\n}\n.inlay-petition > h2 {\n  margin-top: 0;\n}\n.inlay-petition .ipet-2-cols {\n  margin-left: -1rem;\n  margin-right: -1rem;\n  display: flex;\n  flex-wrap: wrap;\n}\n.inlay-petition .ipet-2-cols > div {\n  flex: 1 0 18rem;\n  padding: 0 1rem;\n}\n.inlay-petition .ipet-input-wrapper {\n  margin-bottom: 1rem;\n}\n.inlay-petition input[type=\"text\"],\n.inlay-petition input[type=\"email\"],\n.inlay-petition label {\n  line-height: 1;\n  margin: 0;\n  font-size: 1.1rem;\n}\n.inlay-petition label {\n  display: block;\n  padding: 0.75rem 0;\n}\n.inlay-petition input[type=\"text\"],\n.inlay-petition input[type=\"email\"] {\n  padding: 0.75rem 1rem;\n  background: white;\n  width: 100%;\n}\n.inlay-petition .ipet-optins .option {\n  position: relative;\n  margin-left: 2rem;\n}\n.inlay-petition .ipet-optins .option input[type=\"radio\"] {\n  position: absolute;\n  margin-left: -2rem;\n  margin-top: 0.75rem;\n}\n.inlay-petition .ipet-submit {\n  text-align: center;\n}\n.inlay-petition .ipet-submit button {\n  font-size: 1.1rem;\n}\n", ""]);
 
 // exports
 
@@ -689,7 +754,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, ".ipetometer {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  background: #0967CB;\n  padding: 1rem;\n  color: white;\n  margin-bottom: 1rem;\n  font-weight: bold;\n}\n.ipetometer .ipetometer__domain {\n  flex: 0 0 100%;\n  background: #eee;\n}\n.ipetometer .ipetometer__bar {\n  background: #fc0;\n  height: 2rem;\n}\n.ipetometer .ipetometer__bignum {\n  flex: 0 0 auto;\n  padding-right: 1rem;\n  font-size: 3rem;\n}\n.ipetometer .ipetometer__words {\n  flex: 0 1 auto;\n  font-size: 1rem;\n}\n", ""]);
+exports.push([module.i, ".ipetometer {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  background: #0967CB;\n  line-height: 1;\n  padding: 1rem;\n  color: white;\n  margin-bottom: 1rem;\n  font-weight: bold;\n}\n.ipetometer .ipetometer__domain {\n  margin-top: 1rem;\n  flex: 0 0 100%;\n  background: rgba(255, 255, 255, 0.2);\n}\n.ipetometer .ipetometer__bar {\n  background: #fc0;\n  height: 1rem;\n}\n.ipetometer .ipetometer__bignum {\n  flex: 0 0 auto;\n  padding-right: 1rem;\n  font-size: 3rem;\n}\n.ipetometer .ipetometer__words {\n  flex: 1 1 auto;\n  font-size: 1rem;\n}\n.ipetometer .ipetometer__target {\n  flex: 0 0 auto;\n  font-size: 1rem;\n}\n", ""]);
 
 // exports
 
@@ -1924,6 +1989,15 @@ var render = function() {
               }
             },
             [
+              _vm.inlay.initData.introHTML
+                ? _c("div", {
+                    staticClass: "ipet-intro",
+                    domProps: {
+                      innerHTML: _vm._s(_vm.inlay.initData.introHTML)
+                    }
+                  })
+                : _vm._e(),
+              _vm._v(" "),
               _c("div", { staticClass: "ipet-2-cols" }, [
                 _c("div", { staticClass: "ipet-input-wrapper" }, [
                   _c("label", { attrs: { for: _vm.myId + "fname" } }, [
@@ -2028,6 +2102,77 @@ var render = function() {
                 })
               ]),
               _vm._v(" "),
+              _vm.inlay.initData.preOptinHTML
+                ? _c("div", {
+                    staticClass: "ipet-preoptin",
+                    domProps: {
+                      innerHTML: _vm._s(_vm.inlay.initData.preOptinHTML)
+                    }
+                  })
+                : _vm._e(),
+              _vm._v(" "),
+              _c("div", { staticClass: "ipet-optins" }, [
+                _c("div", { staticClass: "option" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.optin,
+                        expression: "optin"
+                      }
+                    ],
+                    attrs: {
+                      type: "radio",
+                      name: "optin",
+                      required: "",
+                      id: _vm.myId + "ipet-optin-yes",
+                      value: "yes"
+                    },
+                    domProps: { checked: _vm._q(_vm.optin, "yes") },
+                    on: {
+                      change: function($event) {
+                        _vm.optin = "yes"
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("label", { attrs: { for: _vm.myId + "ipet-optin-yes" } }, [
+                    _vm._v(" " + _vm._s(_vm.inlay.initData.optinYesText))
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "option" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.optin,
+                        expression: "optin"
+                      }
+                    ],
+                    attrs: {
+                      type: "radio",
+                      name: "optin",
+                      required: "",
+                      id: _vm.myId + "ipet-optin-no",
+                      value: "no"
+                    },
+                    domProps: { checked: _vm._q(_vm.optin, "no") },
+                    on: {
+                      change: function($event) {
+                        _vm.optin = "no"
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("label", { attrs: { for: _vm.myId + "ipet-optin-no" } }, [
+                    _vm._v(" " + _vm._s(_vm.inlay.initData.optinNoText))
+                  ])
+                ])
+              ]),
+              _vm._v(" "),
               _vm.inlay.initData.smallprintHTML
                 ? _c("div", {
                     staticClass: "ipet-smallprint",
@@ -2067,22 +2212,49 @@ var render = function() {
           )
         : _vm._e(),
       _vm._v(" "),
-      _vm.stage === "thanks"
+      _vm.stage === "social"
         ? _c(
             "div",
             [
               _c("div", {
-                domProps: {
-                  innerHTML: _vm._s(_vm.inlay.initData.webThanksHTML)
-                }
+                domProps: { innerHTML: _vm._s(_vm.inlay.initData.shareAskHTML) }
               }),
               _vm._v(" "),
               _c("inlay-socials", {
-                attrs: { socials: _vm.inlay.initData.socials, icons: "1" }
-              })
+                attrs: { socials: _vm.inlay.initData.socials, icons: "1" },
+                on: {
+                  clicked: function($event) {
+                    _vm.stage = "final"
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("p", [
+                _c(
+                  "a",
+                  {
+                    attrs: { href: "" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        _vm.stage = "final"
+                      }
+                    }
+                  },
+                  [_vm._v("Skip")]
+                )
+              ])
             ],
             1
           )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.stage === "final"
+        ? _c("div", [
+            _c("div", {
+              domProps: { innerHTML: _vm._s(_vm.inlay.initData.finalHTML) }
+            })
+          ])
         : _vm._e()
     ],
     1
@@ -2147,7 +2319,12 @@ var render = function() {
           "a",
           {
             class: "inlay-socials--" + sn.name,
-            attrs: { href: sn.url, target: "_blank" }
+            attrs: { href: sn.url, target: "_blank" },
+            on: {
+              click: function($event) {
+                return _vm.$emit("clicked", { sn: sn.name })
+              }
+            }
           },
           [
             _vm.icons && sn.name === "twitter"
@@ -2323,7 +2500,11 @@ var render = function() {
     ]),
     _vm._v(" "),
     _c("span", { staticClass: "ipetometer__words" }, [
-      _vm._v(_vm._s(_vm.stmt) + " (Target " + _vm._s(_vm.target) + ")")
+      _vm._v(_vm._s(_vm.stmt))
+    ]),
+    _vm._v(" "),
+    _c("span", { staticClass: "ipetometer__target" }, [
+      _vm._v("Target " + _vm._s(_vm.target))
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "ipetometer__domain" }, [

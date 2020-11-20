@@ -1,7 +1,8 @@
 <template>
   <div class="ipetometer" ref="ometer">
     <span class="ipetometer__bignum">{{ count.toLocaleString() }}</span>
-    <span class="ipetometer__words">{{stmt}} (Target {{target}})</span>
+    <span class="ipetometer__words">{{stmt}}</span>
+    <span class="ipetometer__target">Target {{target}}</span>
     <div class="ipetometer__domain" >
       <div class="ipetometer__bar" :style="barStyle"></div>
     </div>
@@ -21,8 +22,10 @@ export default {
   },
   computed:{
     barStyle() {
+      var s = this.step;
+      s = s*s;
       return {
-        width: (this.step * this.count / this.target * 100) + '%'
+        width: (s * this.count / this.target * 100) + '%'
       };
     },
   },
@@ -36,13 +39,15 @@ export default {
   },
   methods:{
     handleIntersectionChange(entries, observer) {
-      console.log("handleIntersectionChange");
       entries.forEach(e => {
         if (e.isIntersecting) {
-          this.animStart = false;
-          window.requestAnimationFrame(this.animate.bind(this));
+          this.startAnimation();
         }
       });
+    },
+    startAnimation() {
+      this.animStart = false;
+      window.requestAnimationFrame(this.animate.bind(this));
     },
     animate(t) {
       if (!this.animStart) {
@@ -66,18 +71,20 @@ export default {
   align-items: center;
   justify-content: space-between;
   background: $blue;
+  line-height: 1;
   padding: 1rem;
   color: white;
   margin-bottom: 1rem;
   font-weight: bold;
 
   .ipetometer__domain {
+    margin-top: 1rem;
     flex: 0 0 100%;
-    background: #eee;
+    background: rgba(255,255,255, 0.2);
   }
   .ipetometer__bar {
     background: #fc0;
-    height: 2rem;
+    height: 1rem;
   }
 
   .ipetometer__bignum {
@@ -86,7 +93,11 @@ export default {
     font-size:3rem;
   }
   .ipetometer__words {
-    flex: 0 1 auto;
+    flex: 1 1 auto;
+    font-size: 1rem;
+  }
+  .ipetometer__target {
+    flex: 0 0 auto;
     font-size: 1rem;
   }
 }
