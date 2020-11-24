@@ -25,7 +25,25 @@
           class="crm-form-text"
           placeholder="{{ts('e.g. Stop Biden Trumping our NHS')}}"
           />
-        <p>This will be displayed at the top of the petition throughout the user’s interaction.</p>
+        <p>This will be displayed at the top of the inlay throughout the user’s interaction.</p>
+      </div>
+
+      <div crm-ui-field="{name: 'inlayForm.uxMode', title: ts('Operation mode')}">
+        <select
+          crm-ui-select="{allowClear:true, dropdownAutoWidth: true}"
+          ng-model="inlay.config.uxMode"
+          name="uxMode"
+          >
+          <option value="petition">Petition</option>
+          <option value="signup">Signup</option>
+        </select>
+      </div>
+
+      <div class="help" ng-show="inlay.config.uxMode === 'petition'">
+        Petitions count a particular type of activity; include a totaliser/chart; add the activity to contacts but ensuring each contact unless they already had one.
+      </div>
+      <div class="help" ng-show="inlay.config.uxMode === 'signup'">
+        Signup forms can be used to add people to a group.
       </div>
 
     </div>
@@ -54,22 +72,41 @@
           ></textarea>
       </div>
 
-      <div crm-ui-field="{name: 'inlayForm.optinYes', title: ts('Text for YES opt-in')}">
+      <div crm-ui-field="{name: 'inlayForm.optinMode', title: ts('Opt-in mode')}">
+        <select
+          crm-ui-select="{allowClear:true, dropdownAutoWidth: true}"
+          ng-model="inlay.config.optinMode"
+          name="optinMode"
+          >
+          <option value="radios">Radios</option>
+          <option value="checkbox">Single Checkbox</option>
+          <option value="none">None (e.g. if using the form as a sign up form only)</option>
+        </select>
+      </div>
+
+      <div
+        ng-show="inlay.config.optinMode !== 'none'"
+        crm-ui-field="{name: 'inlayForm.optinYes',
+          title: ts( (inlay.config.optinMode === 'radios') ? 'Text for YES option' : 'Text for checkbox (checked means Yes, opt-in)')}">
         <input
           crm-ui-id="inlayForm.optinYesText"
           name="sTextubmitButtonText"
           ng-model="inlay.config.optinYesText"
           class="crm-form-text"
+          style="width: 100%"
           placeholder="{{ts('e.g. Add me to your newsletter')}}"
           />
       </div>
 
-      <div crm-ui-field="{name: 'inlayForm.optinNo', title: ts('Text for NO opt-in')}">
+      <div
+        ng-show="inlay.config.optinMode === 'radios'"
+        crm-ui-field="{name: 'inlayForm.optinNo', title: ts('Text for NO option')}">
         <input
           crm-ui-id="inlayForm.optinNoText"
           name="sTextubmitButtonText"
           ng-model="inlay.config.optinNoText"
           class="crm-form-text"
+          style="width: 100%"
           placeholder="{{ts('e.g. I’m fine as I am, thanks')}}"
           />
       </div>
@@ -108,7 +145,7 @@
           ng-model="inlay.config.shareAskHTML"
           class="crm-form-text"
           ></textarea>
-        <p>This text needs to thank them for having signed the petition, and ask them to share on social media.</p>
+        <p>This text needs to thank them for having signed the petition, and ask them to share on social media, if you include those options below. If you don’t then this will be the last page of the UX.</p>
       </div>
 
       <h3>Social Media</h3>
@@ -196,6 +233,22 @@
           <option ng-repeat="g in messageTpls"
                   value="{{g.id}}">{{g.msg_title}}</option>
         </select>
+      </div>
+
+      <div class="crm-section">
+        <div class="label">
+          <label crm-ui-for="inlayForm.useQueue">Use Queue</label>
+        </div>
+        <div class="content">
+          <input
+            type="checkbox"
+            name="useQueue"
+            crm-ui-id="inlayForm.useQueue"
+            ng-model="inlay.config.useQueue"
+            />
+          <label crm-ui-for="inlayForm.useQueue">Queue submissions instead of immediately processing them (very important on a busy site)</label>
+          <p>Queued requests are processed by a scheduled job in the background. This can help avoid database deadlocks on really busy sites.</p>
+        </div>
       </div>
     </div>
 

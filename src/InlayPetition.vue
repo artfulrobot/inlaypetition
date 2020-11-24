@@ -4,6 +4,7 @@
     <h2 v-if="inlay.initData.publicTitle">{{inlay.initData.publicTitle}}</h2>
 
     <ometer-petition
+      v-if="inlay.initData.uxMode === 'petition'"
       :count="inlay.initData.count"
       stmt="Signatures"
       :target="target"
@@ -56,7 +57,7 @@
         v-if="inlay.initData.preOptinHTML"
         v-html="inlay.initData.preOptinHTML"></div>
 
-      <div class="ipet-optins">
+      <div class="ipet-optins" v-if="inlay.initData.optinMode === 'radios'" >
         <div class="option">
           <input type="radio"
                  name="optin"
@@ -76,6 +77,19 @@
                  v-model="optin"
                  />
           <label :for="myId + 'ipet-optin-no'"> {{inlay.initData.optinNoText}}</label>
+        </div>
+      </div>
+
+      <div class="ipet-optins" v-if="inlay.initData.optinMode === 'checkbox'" >
+        <div class="option">
+          <input type="checkbox"
+                 name="optin"
+                 required
+                 :id="myId + 'ipet-optin-cb'"
+                 value="yes"
+                 v-model="optin"
+                 />
+          <label :for="myId + 'ipet-optin-cb'"> {{inlay.initData.optinYesText}}</label>
         </div>
       </div>
 

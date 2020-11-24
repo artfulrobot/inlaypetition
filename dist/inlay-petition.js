@@ -293,6 +293,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
  // import 'vue-select/dist/vue-select.css';
@@ -1968,13 +1982,15 @@ var render = function() {
         ? _c("h2", [_vm._v(_vm._s(_vm.inlay.initData.publicTitle))])
         : _vm._e(),
       _vm._v(" "),
-      _c("ometer-petition", {
-        attrs: {
-          count: _vm.inlay.initData.count,
-          stmt: "Signatures",
-          target: _vm.target
-        }
-      }),
+      _vm.inlay.initData.uxMode === "petition"
+        ? _c("ometer-petition", {
+            attrs: {
+              count: _vm.inlay.initData.count,
+              stmt: "Signatures",
+              target: _vm.target
+            }
+          })
+        : _vm._e(),
       _vm._v(" "),
       _vm.stage === "form"
         ? _c(
@@ -2111,67 +2127,129 @@ var render = function() {
                   })
                 : _vm._e(),
               _vm._v(" "),
-              _c("div", { staticClass: "ipet-optins" }, [
-                _c("div", { staticClass: "option" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.optin,
-                        expression: "optin"
-                      }
-                    ],
-                    attrs: {
-                      type: "radio",
-                      name: "optin",
-                      required: "",
-                      id: _vm.myId + "ipet-optin-yes",
-                      value: "yes"
-                    },
-                    domProps: { checked: _vm._q(_vm.optin, "yes") },
-                    on: {
-                      change: function($event) {
-                        _vm.optin = "yes"
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("label", { attrs: { for: _vm.myId + "ipet-optin-yes" } }, [
-                    _vm._v(" " + _vm._s(_vm.inlay.initData.optinYesText))
+              _vm.inlay.initData.optinMode === "radios"
+                ? _c("div", { staticClass: "ipet-optins" }, [
+                    _c("div", { staticClass: "option" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.optin,
+                            expression: "optin"
+                          }
+                        ],
+                        attrs: {
+                          type: "radio",
+                          name: "optin",
+                          required: "",
+                          id: _vm.myId + "ipet-optin-yes",
+                          value: "yes"
+                        },
+                        domProps: { checked: _vm._q(_vm.optin, "yes") },
+                        on: {
+                          change: function($event) {
+                            _vm.optin = "yes"
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        { attrs: { for: _vm.myId + "ipet-optin-yes" } },
+                        [_vm._v(" " + _vm._s(_vm.inlay.initData.optinYesText))]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "option" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.optin,
+                            expression: "optin"
+                          }
+                        ],
+                        attrs: {
+                          type: "radio",
+                          name: "optin",
+                          required: "",
+                          id: _vm.myId + "ipet-optin-no",
+                          value: "no"
+                        },
+                        domProps: { checked: _vm._q(_vm.optin, "no") },
+                        on: {
+                          change: function($event) {
+                            _vm.optin = "no"
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        { attrs: { for: _vm.myId + "ipet-optin-no" } },
+                        [_vm._v(" " + _vm._s(_vm.inlay.initData.optinNoText))]
+                      )
+                    ])
                   ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "option" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.optin,
-                        expression: "optin"
-                      }
-                    ],
-                    attrs: {
-                      type: "radio",
-                      name: "optin",
-                      required: "",
-                      id: _vm.myId + "ipet-optin-no",
-                      value: "no"
-                    },
-                    domProps: { checked: _vm._q(_vm.optin, "no") },
-                    on: {
-                      change: function($event) {
-                        _vm.optin = "no"
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("label", { attrs: { for: _vm.myId + "ipet-optin-no" } }, [
-                    _vm._v(" " + _vm._s(_vm.inlay.initData.optinNoText))
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.inlay.initData.optinMode === "checkbox"
+                ? _c("div", { staticClass: "ipet-optins" }, [
+                    _c("div", { staticClass: "option" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.optin,
+                            expression: "optin"
+                          }
+                        ],
+                        attrs: {
+                          type: "checkbox",
+                          name: "optin",
+                          required: "",
+                          id: _vm.myId + "ipet-optin-cb",
+                          value: "yes"
+                        },
+                        domProps: {
+                          checked: Array.isArray(_vm.optin)
+                            ? _vm._i(_vm.optin, "yes") > -1
+                            : _vm.optin
+                        },
+                        on: {
+                          change: function($event) {
+                            var $$a = _vm.optin,
+                              $$el = $event.target,
+                              $$c = $$el.checked ? true : false
+                            if (Array.isArray($$a)) {
+                              var $$v = "yes",
+                                $$i = _vm._i($$a, $$v)
+                              if ($$el.checked) {
+                                $$i < 0 && (_vm.optin = $$a.concat([$$v]))
+                              } else {
+                                $$i > -1 &&
+                                  (_vm.optin = $$a
+                                    .slice(0, $$i)
+                                    .concat($$a.slice($$i + 1)))
+                              }
+                            } else {
+                              _vm.optin = $$c
+                            }
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        { attrs: { for: _vm.myId + "ipet-optin-cb" } },
+                        [_vm._v(" " + _vm._s(_vm.inlay.initData.optinYesText))]
+                      )
+                    ])
                   ])
-                ])
-              ]),
+                : _vm._e(),
               _vm._v(" "),
               _vm.inlay.initData.smallprintHTML
                 ? _c("div", {

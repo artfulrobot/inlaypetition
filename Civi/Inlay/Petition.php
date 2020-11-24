@@ -14,7 +14,7 @@ class Petition extends InlayType {
 
   public static $petitionActivityType = NULL;
 
-  public static $typeName = 'Petition';
+  public static $typeName = 'Petition/signup';
 
   /**
    * Cache so that when processing a set of queued signups we don't have to
@@ -30,11 +30,13 @@ class Petition extends InlayType {
     // Form
     'publicTitle'      => '',
     'target'           => NULL,
+    'uxMode'           => 'petition',
     // Page 1
     'introHTML'        => '',
     'askPostcode'      => 'no', // no|optional|required
     'askPhone'         => 'no', // no|optional|required
     'preOptinHTML'     => '',
+    'optinMode'        => 'radios',
     'optinYesText'     => 'I would like to receive further information from Keep Our NHS Public about its campaigns and activities, in the future',
     'optinNoText'      => 'I’m happy as I am, thanks',
     'smallprintHTML'   => NULL,
@@ -47,6 +49,9 @@ class Petition extends InlayType {
     // Page 3
     'finalHTML'        => '<h2>Thank you</h2><p>Are you able to make a donation to our work?</p>',
     'thanksMsgTplID'   => NULL,
+    // Internals
+    'mailingGroup'     => NULL,
+    'useQueue'         => TRUE,
   ];
 
   /**
@@ -78,15 +83,14 @@ class Petition extends InlayType {
    */
   public function getInitData() {
 
-    $data = [
-      // Name of global Javascript function used to boot this app.
-      'init'             => 'inlayPetitionInit',
-    ];
+    $data = [];
     foreach ([
+      // UX
+      'uxMode',
       // Top bit
       'publicTitle', 'target',
       // First view
-      'introHTML', 'askPostcode', 'askPhone', 'preOptinHTML', 'optinYesText', 'optinNoText', 'smallprintHTML', 'submitButtonText',
+      'introHTML', 'askPostcode', 'askPhone', 'preOptinHTML', 'optinMode', 'optinYesText', 'optinNoText', 'smallprintHTML', 'submitButtonText',
       // Social share ask
       'shareAskHTML', 'socials', 'tweet', 'whatsappText',
       // Final thanks.
@@ -95,6 +99,7 @@ class Petition extends InlayType {
       $data[$_] = $this->config[$_] ?? '';
     }
 
+    // Social share data.
     // Nb. same logic as SignupA
     $data['socials'] = [];
     foreach ($this->config['socials'] as $social) {
@@ -108,21 +113,35 @@ class Petition extends InlayType {
       $data['socials'][] = $_;
     }
 
-    // Count people signed up...
-    $subject = $this->getName();
-    $activityTypeID = $this->getActivityTypeID();
+    // Custom output per uxMode
+    switch ($this->config['uxMode']) {
+    case 'petition':
+      $data['init'] = 'inlayPetitionInit';
+      // Count people signed up...
+      $subject = $this->getName();
+      $activityTypeID = $this->getActivityTypeID();
 
-    $data['count'] = (int) \CRM_Core_DAO::singleValueQuery("
-        SELECT COUNT(*)
-        FROM civicrm_activity a
-        INNER JOIN civicrm_activity_contact ac ON a.id = ac.activity_id AND ac.record_type_id = 3 /*target*/
-        INNER JOIN civicrm_contact c ON ac.contact_id = c.id AND c.is_deleted = 0
-        WHERE a.activity_type_id = %1 AND a.subject = %2
-      ", [
-        1 => [$activityTypeID, 'Integer'],
-        2 => [$subject, 'String'],
-      ]);
-      Civi::log()->info("Count is $data[count] for petition inlay $subject");
+      $data['count'] = (int) \CRM_Core_DAO::singleValueQuery("
+          SELECT COUNT(*)
+          FROM civicrm_activity a
+          INNER JOIN civicrm_activity_contact ac ON a.id = ac.activity_id AND ac.record_type_id = 3 /*target*/
+          INNER JOIN civicrm_contact c ON ac.contact_id = c.id AND c.is_deleted = 0
+          WHERE a.activity_type_id = %1 AND a.subject = %2
+        ", [
+          1 => [$activityTypeID, 'Integer'],
+          2 => [$subject, 'String'],
+        ]);
+        Civi::log()->info("Count is $data[count] for petition inlay $subject");
+      break;
+
+    case 'signup':
+      $data['init'] = 'inlayPetitionInit';
+      break;
+
+    default:
+      // Should never happen.
+      throw new \InvalidArgumentException("Bad configuration on Petition/signup Inlay " . $this->getID());
+    }
 
     return $data;
   }
@@ -165,21 +184,26 @@ class Petition extends InlayType {
       return ['token' => $this->getCSRFToken(['data' => $data, 'validFrom' => 5, 'validTo' => 120])];
     }
 
-    // Defer processing the data to a queue. This speeds things up for the user
-    // and avoids database deadlocks.
-    $queue = static::getQueueService();
+    if ($this->config['useQueue']) {
+      // Defer processing the data to a queue. This speeds things up for the user
+      // and avoids database deadlocks.
+      $queue = static::getQueueService();
 
-    // We have context that is not stored in $data, namely which Inlay Instance we are.
-    // Store that now.
-    $data['inlayID'] = $this->getID();
+      // We have context that is not stored in $data, namely which Inlay Instance we are.
+      // Store that now.
+      $data['inlayID'] = $this->getID();
 
-    $queue->createItem(new CRM_Queue_Task(
-      ['Civi\\Inlay\\Petition', 'processQueueItem'], // callback
-      [$data], // arguments
-      "" // title
-    ));
+      $queue->createItem(new CRM_Queue_Task(
+        ['Civi\\Inlay\\Petition', 'processQueueItem'], // callback
+        [$data], // arguments
+        "" // title
+      ));
+    }
+    else {
+      // Immediate processing.
+      $this->processDeferredSubmission($data);
+    }
 
-    // Optimistically return!
     return ['success' =>1];
   }
 
@@ -438,15 +462,6 @@ class Petition extends InlayType {
   }
 
   /**
-   * Returns a URL to a page that lets an admin user configure this Inlay.
-   *
-   * @return string URL
-   */
-  public function getAdminURL() {
-
-  }
-
-  /**
    * Get the Javascript app script.
    *
    * This will be bundled with getInitData() and some other helpers into a file
@@ -458,33 +473,5 @@ class Petition extends InlayType {
     return file_get_contents(E::path('dist/inlay-petition.js'));
   }
 
-
-  /**
-   * Custom function to get unis.
-   *
-   * @return array contact ID => university name
-   */
-  public function getUnis($checkID=NULL) {
-    $unis = [];
-
-    $api = \Civi\Api4\Contact::get(FALSE)
-      ->addSelect('legal_name', 'id')
-      ->addWhere('contact_type', '=', 'Organization')
-      ->addWhere('contact_sub_type', 'IN', ['ACIHECollege', 'ACIUniversity'])
-      ->addWhere('is_deleted', '=', FALSE)
-    ;
-    if ($checkID) {
-      $api->addWhere('id', '=', $checkID);
-    }
-    $result = $api
-      ->addOrderBy('legal_name', 'ASC')
-      ->execute();
-
-    foreach ($result as $uni) {
-      $unis[] = ['id' => $uni['id'], 'name' => $uni['legal_name']];
-    }
-
-    return $unis;
-  }
 }
 

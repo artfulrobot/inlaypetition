@@ -8,6 +8,26 @@ Add high performance petitions, configured in CiviCRM, to your separate public w
 
 The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
+## Features
+
+php
+
+- count special type of activity (@todo make optional)
+- 3 stage UX inc socal
+- optin options; add to group, if one selected.
+- add activity (but prevent duplicates)
+- queue + job
+- send thank you msgtpl
+
+angular
+
+- simple fieldsets.
+
+front end
+
+- vue - reusable.
+
+
 ## Requirements
 
 * PHP v7.3+
