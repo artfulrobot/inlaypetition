@@ -36,7 +36,7 @@ class Petition extends InlayType {
     'askPostcode'      => 'no', // no|optional|required
     'askPhone'         => 'no', // no|optional|required
     'preOptinHTML'     => '',
-    'optinMode'        => 'radios',
+    'optinMode'        => 'radios', // radios|none|checkbox
     'optinYesText'     => 'I would like to receive further information from Keep Our NHS Public about its campaigns and activities, in the future',
     'optinNoText'      => 'I’m happy as I am, thanks',
     'smallprintHTML'   => NULL,
@@ -131,7 +131,6 @@ class Petition extends InlayType {
           1 => [$activityTypeID, 'Integer'],
           2 => [$subject, 'String'],
         ]);
-        Civi::log()->info("Count is $data[count] for petition inlay $subject");
       break;
 
     case 'signup':
@@ -279,15 +278,25 @@ class Petition extends InlayType {
     }
 
     // Write an activity
-    if (!$this->contactAlreadySigned($contactID)) {
-      // Not signed yet.
+    if ($this->config['uxMode'] === 'signup'
+      || ($this->config['uxMode'] === 'petition' && !$this->contactAlreadySigned($contactID))) {
+
+      // For signup, always.
+      // For petition, only if not done before.
       $this->addSignedPetitionActivity($contactID, $data);
     }
 
     // Handle optin.
-    if (!empty($this->config['mailingGroup']) && ($data['optin'] ?? 'no') === 'yes') {
-      // Add contact to the group.
-      $this->addContactToGroup($contactID);
+    if (!empty($this->config['mailingGroup'])) {
+      $optinMode = $this->config['optinMode'];
+
+      // If there was no optin (e.g. signup form)
+      // or if the user actively checked/selected yes, then sign up.
+      if ($optinMode === 'none'
+        || ($data['optin'] ?? 'no') === 'yes') {
+        // Add contact to the group.
+        $this->addContactToGroup($contactID);
+      }
     }
 
     // Thank you.
