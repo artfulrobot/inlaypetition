@@ -270,7 +270,12 @@ class Petition extends InlayType {
   public function processDeferredSubmission($data) {
 
     // Find Contact with XCM.
-    $params = $data + ['contact_type' => 'Individual'];
+    $params = [
+      'contact_type' => 'Individual',
+      'email'        => $data['email'],
+      'first_name'   => $data['first_name'],
+      'last_name'    => $data['last_name'],
+    ];
     $contactID = civicrm_api3('Contact', 'getorcreate', $params)['id'] ?? NULL;
     if (!$contactID) {
       Civi::log()->error('Failed to getorcreate contact with params: ' . json_encode($params));
@@ -338,6 +343,8 @@ class Petition extends InlayType {
     return $found;
   }
   /**
+   * Might be a petition or a signup.
+   *
    * @var int $contactID
    * @var array $data
    */
@@ -348,6 +355,7 @@ class Petition extends InlayType {
       'subject'              => $this->getName(),
       'status_id'            => 'Completed',
       'source_contact_id'    => $contactID,
+      'location'             => $data['location'] ?? '',
       // 'source_contact_id' => \CRM_Core_BAO_Domain::getDomain()->contact_id,
       // 'details'           => $details,
     ];
@@ -381,7 +389,7 @@ class Petition extends InlayType {
       'id'             => $this->config['thanksMsgTplID'],
       'from'           => $from,
       'to_email'       => $data['email'],
-      'bcc'            => "forums@artfulrobot.uk",
+      // 'bcc'            => "forums@artfulrobot.uk",
       'contact_id'     => $contactID,
       'disable_smarty' => 1,
       /*
@@ -407,6 +415,7 @@ class Petition extends InlayType {
    * - first_name
    * - last_name
    * - email
+   * - location (URL)
    * - token TRUE|unset
    *
    * @param array $data
@@ -436,6 +445,22 @@ class Petition extends InlayType {
     }
     if ($errors) {
       throw new \Civi\Inlay\ApiException(400, ['error' => implode(', ', $errors)]);
+    }
+
+    // Clean up location
+    $location = trim($data['location'] ?? '');
+    if ($location) {
+      $containsEmoji = (preg_match("/[\u{1f300}-\u{1f5ff}\u{e000}-\u{f8ff}]/u", $location));
+      $looksFairEnough = preg_match('@^https?://[^/]+/[^<>]+$@', $location);
+      if (!$containsEmoji && $looksFairEnough && strlen($location) < 255) {
+        // Looks fine.
+        $valid['location'] = $location;
+      }
+      else {
+        // Hmmm looks dodgy.
+        Civi::log()->notice("Dodgy location received with petition submission with email: '$valid[email]': " . $location);
+        $valid['location'] = mb_substr(preg_replace('@[<>\u{1f300}-\u{1f5ff}\u{e000}-\u{f8ff}]+@u', '_', $location), 0, 200) . ' (cleaned)';
+      }
     }
 
     // Data is valid.

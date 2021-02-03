@@ -205,6 +205,24 @@
       font-size: 1.1rem;
     }
   }
+
+  a.button {
+    display: inline-block;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius:0;
+    border: none;
+    background-color: #0967CB;
+    color: #fc0;
+    font-weight: bold;
+    text-decoration: none;
+
+    &:hover {
+      background: #fc0;
+      color: #0967CB;
+    }
+  }
 }
 </style>
 <script>
@@ -257,7 +275,8 @@ export default {
         first_name: this.first_name,
         last_name: this.last_name,
         email: this.email,
-        phone: this.phone
+        phone: this.phone,
+        location: window.location.href
       };
 
       const progress = this.$refs.progress;

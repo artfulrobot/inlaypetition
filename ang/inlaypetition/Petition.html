@@ -40,7 +40,10 @@
       </div>
 
       <div class="help" ng-show="inlay.config.uxMode === 'petition'">
-        Petitions count a particular type of activity; include a totaliser/chart; add the activity to contacts but ensuring each contact unless they already had one.
+        Petitions provide a form that shows a count of the number of signers.
+        When somebody submits the form it will add a "Signed Petition (Inlay)",
+        with the name of this petition in the subject. It won't add an activity
+        if somebody has already done this petition.
       </div>
       <div class="help" ng-show="inlay.config.uxMode === 'signup'">
         Signup forms can be used to add people to a group.
