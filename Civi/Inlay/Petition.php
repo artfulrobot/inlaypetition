@@ -12,7 +12,15 @@ use CRM_Queue_Service;
 
 class Petition extends InlayType {
 
+  /**
+   * Access this via getActivityTypeID()
+   */
   public static $petitionActivityType = NULL;
+
+  /**
+   * Access this via getSignerOptInFieldID()
+   */
+  public static $signerOptInFieldID = NULL;
 
   public static $typeName = 'Petition/signup';
 
@@ -147,8 +155,6 @@ class Petition extends InlayType {
 
   /**
    * Find our activity type
-   *
-   * @todo optimise this, it's probly slow.
    */
   public static function getActivityTypeID() {
     if (!static::$petitionActivityType) {
@@ -160,6 +166,20 @@ class Petition extends InlayType {
         ->execute()->first()['value'] ?? 0;
     }
     return static::$petitionActivityType;
+  }
+
+  /**
+   * Find our activity type
+   */
+  public static function getSignerOptInFieldID() {
+    if (!static::$signerOptInFieldID) {
+      // Look it up.
+      static::$signerOptInFieldID = \Civi\Api4\CustomField::get(FALSE)
+        ->addWhere('custom_group_id:name', '=', 'inlaypetition_signer')
+        ->addWhere('name', '=', 'inlaypetition_signer_optin')
+        ->execute()->first()['id'];
+    }
+    return static::$signerOptInFieldID;
   }
 
   /**
@@ -284,33 +304,56 @@ class Petition extends InlayType {
       throw new \Civi\Inlay\ApiException(500, ['error' => 'Server error: XCM1']);
     }
 
-    // Write an activity
-    if ($this->config['uxMode'] === 'signup'
-      || ($this->config['uxMode'] === 'petition' && !$this->contactAlreadySigned($contactID))) {
-
-      // For signup, always.
-      // For petition, only if not done before.
-      $this->addSignedPetitionActivity($contactID, $data);
-    }
-
     // Handle optin.
     if (!empty($this->config['mailingGroup'])) {
       $optinMode = $this->config['optinMode'];
+      $optinRecord = '';
+
+      $isInGroup = \Civi\Api4\GroupContact::get(FALSE)
+        ->selectRowCount()
+        ->addWhere('group_id', '=', $this->config['mailingGroup'])
+        ->addWhere('contact_id', '=', $contactID)
+        ->addWhere('status:name', '=', 'Added')
+        ->execute()->count() > 0;
 
       // If there was no optin (e.g. signup form)
       // or if the user actively checked/selected yes, then sign up.
       if ($optinMode === 'none'
         || ($data['optin'] ?? 'no') === 'yes') {
-        // Add contact to the group.
-        $this->addContactToGroup($contactID);
-        Civi::log()->debug("processDeferredSubmission: adding $contactID to group");
+
+        // Ensure contact is in the group.
+        if ($isInGroup) {
+          // Already in group.
+          $optinRecord = 'yes_in_already';
+        }
+        else {
+          $optinRecord = 'yes_added';
+          $this->addContactToGroup($contactID);
+        }
       }
       else{
-        Civi::log()->debug("processDeferredSubmission: NOT adding $contactID to group. opt in '$optinMode'");
+        // Contact not to be added (or removed)
+        $optinRecord = $isInGroup ? 'no_in_already' : 'no_not_in';
       }
     }
     else{
       Civi::log()->debug("processDeferredSubmission: NOT adding $contactID to group: no group configured");
+    }
+
+    // Add optin record to data
+    $data['inlaypetition_signer_optin'] = $optinRecord;
+
+    // Write an activity
+    if ($this->config['uxMode'] === 'signup') {
+      // For signup, always.
+      $this->addSignedPetitionActivity($contactID, $data);
+    }
+    elseif ($this->config['uxMode'] === 'petition') {
+      if (!$this->contactAlreadySigned($contactID)) {
+        // For petition, only record new activity if not done before.
+        $this->addSignedPetitionActivity($contactID, $data);
+      }
+      // ? update the activity here?
     }
 
     // Thank you.
@@ -327,14 +370,14 @@ class Petition extends InlayType {
    *
    * @var int $contactID
    *
-   * @return bool
+   * @return int Activity ID or 0
    */
-  public function contactAlreadySigned($contactID) {
+  public function contactAlreadySigned($contactID) :int {
 
     $subject = $this->getName();
     $activityTypeID = $this->getActivityTypeID();
 
-    $found = (bool) \CRM_Core_DAO::singleValueQuery("
+    $found = (int) \CRM_Core_DAO::singleValueQuery("
         SELECT a.id
         FROM civicrm_activity a
         INNER JOIN civicrm_activity_contact ac
@@ -365,11 +408,13 @@ class Petition extends InlayType {
       'status_id'            => 'Completed',
       'source_contact_id'    => $contactID,
       'location'             => $data['location'] ?? '',
-      // 'source_contact_id' => \CRM_Core_BAO_Domain::getDomain()->contact_id,
       // 'details'           => $details,
     ];
-    $result = civicrm_api3('Activity', 'create', $activityCreateParams);
+    if ($data['inlaypetition_signer_optin']) {
+      $activityCreateParams['custom_' . static::getSignerOptInFieldID()] = $data['inlaypetition_signer_optin'];
+    }
 
+    $result = civicrm_api3('Activity', 'create', $activityCreateParams);
     return $result;
   }
   /**

@@ -10,6 +10,8 @@ The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
 ## Features
 
+Uses custom field to store whether signups were new to the group or not.
+
 php
 
 - count special type of activity (@todo make optional)

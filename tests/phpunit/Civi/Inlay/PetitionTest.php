@@ -28,6 +28,8 @@ class PetitionTest extends \PHPUnit\Framework\TestCase implements HeadlessInterf
   /** @var int */
   protected $contactID;
 
+  /** @var int custom field id */
+  protected $customOptInFieldID;
   /**
    * Set up for headless tests.
    *
@@ -67,6 +69,7 @@ class PetitionTest extends \PHPUnit\Framework\TestCase implements HeadlessInterf
       ->execute()->first()['id'];
     $this->assertGreaterThan(0, $this->contactID);
 
+    $this->customOptInFieldID = Petition::getSignerOptInFieldID();
   }
 
   /**
@@ -119,6 +122,63 @@ class PetitionTest extends \PHPUnit\Framework\TestCase implements HeadlessInterf
       $this->inlayPetition->processRequest($request);
       $this->assertSingleSignedPetitionActivity();
     }
+  }
+
+  /**
+   * Test optin recording in the custom field.
+   *
+   * i.e. it records in a custom field on the signed activity whether you opted
+   * in or not and whether you were already in the group at the time.
+   */
+  public function testOpninRecording() {
+
+    // Create a petition inlay.
+    $this->createPetitionInlay();
+
+    // Contact not in group, does not opt in.
+    $request = $this->getRequestObject(TRUE, ['optin' => 'no']);
+    static::$getorcreateResponses[] = ['id' => $this->contactID];
+    $this->inlayPetition->processRequest($request);
+    // Should not be in group; and no_not_in
+    $this->assertContactNotInNewsletterGroup();
+    $activityID = $this->assertSingleSignedPetitionActivity('no_not_in');
+    // delete activity.
+    \Civi\Api4\Activity::delete(FALSE)
+      ->addWhere('id', '=', $activityID)
+      ->execute();
+
+    // Contact not in group, does opt in.
+    $request = $this->getRequestObject(TRUE, ['optin' => 'yes']);
+    static::$getorcreateResponses[] = ['id' => $this->contactID];
+    $this->inlayPetition->processRequest($request);
+    // Should be in group now; and yes_added
+    $this->assertContactInNewsletterGroup();
+    $activityID = $this->assertSingleSignedPetitionActivity('yes_added');
+    // delete activity.
+    \Civi\Api4\Activity::delete(FALSE)
+      ->addWhere('id', '=', $activityID)
+      ->execute();
+
+    // Contact in group, does not opt in.
+    $request = $this->getRequestObject(TRUE, ['optin' => 'no']);
+    static::$getorcreateResponses[] = ['id' => $this->contactID];
+    $this->inlayPetition->processRequest($request);
+    // Should (still) be in group; and no_in_already
+    $this->assertContactInNewsletterGroup();
+    $activityID = $this->assertSingleSignedPetitionActivity('no_in_already');
+    // delete activity.
+    \Civi\Api4\Activity::delete(FALSE)
+      ->addWhere('id', '=', $activityID)
+      ->execute();
+
+    // Contact in group, does opt in.
+    $request = $this->getRequestObject(TRUE, ['optin' => 'yes']);
+    static::$getorcreateResponses[] = ['id' => $this->contactID];
+    $this->inlayPetition->processRequest($request);
+    // Should (still) be in group; and no_in_already
+    $this->assertContactInNewsletterGroup();
+    $activityID = $this->assertSingleSignedPetitionActivity('yes_in_already');
+
   }
 
   /**
@@ -279,6 +339,30 @@ class PetitionTest extends \PHPUnit\Framework\TestCase implements HeadlessInterf
     ];
   }
   /**
+   * Check that signup mode works.
+   */
+  public function testSignupUX() {
+
+    $this->createPetitionInlay(['uxMode' => 'signup', 'optinMode' => 'none']);
+
+    $request = $this->getRequestObject(TRUE, [
+        'first_name' => 'Wilma',
+        'last_name'  => 'Test',
+        'email'      => 'wilma@example.org',
+    ]);
+
+    static::$getorcreateResponses[] = ['id' => $this->contactID];
+    $this->inlayPetition->processRequest($request);
+    $this->assertSingleSignedPetitionActivity('yes_added');
+    $this->assertContactInNewsletterGroup();
+
+    // Repeat
+    static::$getorcreateResponses[] = ['id' => $this->contactID];
+    $this->inlayPetition->processRequest($request);
+    $this->assertLatestSignedPetitionActivity(2, 'yes_in_already');
+    $this->assertContactInNewsletterGroup();
+  }
+  /**
    * Created a test petition inlay.
    *
    * @var $options array of overrides.
@@ -307,6 +391,10 @@ class PetitionTest extends \PHPUnit\Framework\TestCase implements HeadlessInterf
   }
 
   /**
+   * @var bool $withToken If true, add a valid token in. If not, add in the
+   * publicID.
+   * @var array $requestData request data
+   * @var bool $applyDefaults if true add defaults, if not use requestData as is.
    */
   protected function getRequestObject($withToken = TRUE, $requestData = [], $applyDefaults = TRUE) :ApiRequest {
 
@@ -319,15 +407,16 @@ class PetitionTest extends \PHPUnit\Framework\TestCase implements HeadlessInterf
         'email'      => 'wilma@example.org',
         'optin'      => 'yes',
       ];
-      if (!$withToken) {
-        // We want an initial request, without token.
-        // This requests should will have a publicID.
-        $requestData['publicID'] = $this->inlayData['public_id'];
-      }
-      else {
-        // Add a token that's already valid so we're not waiting around.
-        $requestData['token'] = $this->inlayPetition->getCSRFToken(['data' => $requestData, 'validFrom' => 0]);
-      }
+    }
+
+    if (!$withToken) {
+      // We want an initial request, without token.
+      // This requests should will have a publicID.
+      $requestData['publicID'] = $this->inlayData['public_id'];
+    }
+    else {
+      // Add a token that's already valid so we're not waiting around.
+      $requestData['token'] = $this->inlayPetition->getCSRFToken(['data' => $requestData, 'validFrom' => 0]);
     }
 
     $request = new ApiRequest();
@@ -355,18 +444,31 @@ class PetitionTest extends \PHPUnit\Framework\TestCase implements HeadlessInterf
       ->execute();
     $this->assertEquals(0, $groupContacts->count());
   }
-  protected function assertSingleSignedPetitionActivity() {
+  /**
+   */
+  protected function assertSingleSignedPetitionActivity($expectedOptin = NULL) :int {
+    return $this->assertLatestSignedPetitionActivity(1, $expectedOptin);
+  }
+  /**
+   */
+  protected function assertLatestSignedPetitionActivity($expectedCount, $expectedOptin = NULL) :int {
     // Check that the correct activity was added.
     $activity = civicrm_api3('Activity', 'get', [
       'target_id'        => $this->contactID,
       'activity_type_id' => Petition::$petitionActivityType,
       'sequential'       => 1,
+      'options'          => ['sort' => "id"],
+      'return'           => ['id', 'subject', 'status_id', 'source_contact_id', 'custom_' . $this->customOptInFieldID ]
     ]);
-    $this->assertEquals(1, $activity['count']);
-    $activity = $activity['values'][0];
+    $this->assertEquals($expectedCount, $activity['count']);
+    $activity = end($activity['values']);
     $this->assertEquals('Test Petition', $activity['subject']);
     $this->assertEquals(2, $activity['status_id']); /* Completed */
     $this->assertEquals($this->contactID, $activity['source_contact_id']);
+    if ($expectedOptin !== NULL) {
+      $this->assertEquals($expectedOptin, $activity['custom_' . $this->customOptInFieldID] ?? NULL);
+    }
+    return (int) $activity['id'];
   }
 }
 
