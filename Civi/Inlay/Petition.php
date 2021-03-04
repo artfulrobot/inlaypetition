@@ -442,7 +442,7 @@ class Petition extends InlayType {
     foreach (['first_name', 'last_name', 'email'] as $field) {
       $val = trim($data[$field] ?? '');
       if (empty($val)) {
-        $errors[] = str_replace('_', ' ', $field) . " required.";
+        $errors[] = str_replace('_', ' ', $field) . " required";
       }
       else {
         if ($field === 'email' && !filter_var($val, FILTER_VALIDATE_EMAIL)) {
@@ -508,9 +508,11 @@ class Petition extends InlayType {
       catch (\InvalidArgumentException $e) {
         // Token failed. Issue a public friendly message, though this should
         // never be seen by anyone legit.
-        Civi::log()->notice("Token error: " . $e->getMessage . "\n" . $e->getTraceAsString());
+        Civi::log()->notice("Token error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
         throw new \Civi\Inlay\ApiException(400,
-          ['error' => "Mysterious problem, sorry! Code " . substr($e->getMessage(), 0, 3)]);
+          ['error' => "Mysterious problem, sorry! Code " . substr($e->getMessage(), 0, 3)],
+          $e->getMessage() /* provide full message as internalError */
+        );
       }
 
       // Validation that is more expensive, and for fields where invalid data
