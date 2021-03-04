@@ -102,7 +102,7 @@ class PetitionTest extends \PHPUnit\Framework\TestCase implements HeadlessInterf
       $result = $this->inlayPetition->processRequest($request);
     }
     catch (\ApiException $e) {
-      print "Exception: " . $e->getMessage() . "\nInternal: " . $e->getInternalError() . "\n";
+      $this->fail("Exception: " . $e->getMessage() . "\nInternal: " . $e->getInternalError() . "\n");
     }
 
     $this->assertSingleSignedPetitionActivity();

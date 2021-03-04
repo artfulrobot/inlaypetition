@@ -38,7 +38,6 @@ class CRM_Inlaypetition_Upgrader extends CRM_Inlaypetition_Upgrader_Base {
       ->addWhere('name', '=', 'inlay_petition')
       ->execute()->first()['value'] ?? 0;
 
-    print "getSignedActivityTypeValue $petitionActivityType";
     return (int) $petitionActivityType;
   }
 
