@@ -20,9 +20,9 @@
             required
             type="text"
             :id="myId + 'fname'"
-            :name="first_name"
             :ref="first_name"
             :disabled="$root.submissionRunning"
+            name="first_name"
             v-model="first_name"
             />
         </div>
@@ -32,9 +32,9 @@
             required
             type="text"
             :id="myId + 'lname'"
-            :name="last_name"
             :ref="last_name"
             :disabled="$root.submissionRunning"
+            name="last_name"
             v-model="last_name"
             />
         </div>
@@ -46,9 +46,9 @@
           required
           type="email"
           :id="myId + 'email'"
-          :name="email"
           :ref="email"
           :disabled="$root.submissionRunning"
+          name="email"
           v-model="email"
           />
       </div>
@@ -276,7 +276,8 @@ export default {
         last_name: this.last_name,
         email: this.email,
         phone: this.phone,
-        location: window.location.href
+        location: window.location.href,
+        optin: this.optin
       };
 
       const progress = this.$refs.progress;

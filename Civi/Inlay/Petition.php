@@ -269,6 +269,8 @@ class Petition extends InlayType {
    */
   public function processDeferredSubmission($data) {
 
+    Civi::log()->debug('processDeferredSubmission: ' . json_encode($data));
+
     // Find Contact with XCM.
     $params = [
       'contact_type' => 'Individual',
@@ -301,7 +303,14 @@ class Petition extends InlayType {
         || ($data['optin'] ?? 'no') === 'yes') {
         // Add contact to the group.
         $this->addContactToGroup($contactID);
+        Civi::log()->debug("processDeferredSubmission: adding $contactID to group");
       }
+      else{
+        Civi::log()->debug("processDeferredSubmission: NOT adding $contactID to group. opt in '$optinMode'");
+      }
+    }
+    else{
+      Civi::log()->debug("processDeferredSubmission: NOT adding $contactID to group: no group configured");
     }
 
     // Thank you.
@@ -416,6 +425,7 @@ class Petition extends InlayType {
    * - last_name
    * - email
    * - location (URL)
+   * - optin
    * - token TRUE|unset
    *
    * @param array $data
@@ -461,6 +471,31 @@ class Petition extends InlayType {
         Civi::log()->notice("Dodgy location received with petition submission with email: '$valid[email]': " . $location);
         $valid['location'] = mb_substr(preg_replace('@[<>\u{1f300}-\u{1f5ff}\u{e000}-\u{f8ff}]+@u', '_', $location), 0, 200) . ' (cleaned)';
       }
+    }
+
+    // Optin.
+    switch ($this->config['optinMode']) {
+    case 'radios':
+      // We require the 'optin' data.
+      if (!in_array($data['optin'] ?? '', ['yes', 'no'])) {
+        // Error.
+        throw new \Civi\Inlay\ApiException(400, ['error' => 'Please choose to opt-in to updates or not']);
+      }
+      $valid['optin'] = $data['optin'];
+      break;
+
+    case 'checkbox':
+      if (($data['optin'] ?? '') === 'yes') {
+        $valid['optin'] = 'yes';
+      }
+      else {
+        // Checkboxes don't submit 'no' for off.
+        $valid['optin'] = 'no';
+      }
+      break;
+
+    default:
+      $valid['optin'] = 'yes';
     }
 
     // Data is valid.
