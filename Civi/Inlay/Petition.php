@@ -196,6 +196,7 @@ class Petition extends InlayType {
    */
   public function processRequest(ApiRequest $request) {
 
+    Civi::log()->debug('Petition inlay request: ' . json_encode($request->getBody()));
     $data = $this->cleanupInput($request->getBody());
 
     if (empty($data['token'])) {
@@ -438,24 +439,36 @@ class Petition extends InlayType {
 
     $from = civicrm_api3('OptionValue', 'getvalue', [ 'return' => "label", 'option_group_id' => "from_email_address", 'is_default' => 1]);
 
-    // We use the email send in the data, as that's what they'd expect.
-    $params = [
-      'id'             => $this->config['thanksMsgTplID'],
-      'from'           => $from,
-      'to_email'       => $data['email'],
-      // 'bcc'            => "forums@artfulrobot.uk",
-      'contact_id'     => $contactID,
-      'disable_smarty' => 1,
-      /*
-      'template_params' =>
-      [ 'foo' => 'hello',
-      // {$foo} in templates 'bar' => '123',
-      // {$bar} in templates ],
-      */
-      ];
-
     try {
-      civicrm_api3('MessageTemplate', 'send', $params);
+      // This was the original, using MessageTemplate.send API
+      //
+      // // We use the email send in the data, as that's what they'd expect.
+      // $params = [
+      //   'id'             => $this->config['thanksMsgTplID'],
+      //   'from'           => $from,
+      //   'to_email'       => $data['email'],
+      //   // 'bcc'            => "forums@artfulrobot.uk",
+      //   'contact_id'     => $contactID,
+      //   'disable_smarty' => 1,
+      // /*
+      // 'template_params' =>
+      // [ 'foo' => 'hello',
+      // // {$foo} in templates 'bar' => '123',
+      // // {$bar} in templates ],
+      // ];
+      // civicrm_api3('MessageTemplate', 'send', $params);
+      //  */
+
+      // This is the new one using Email.send from the EmailAPI extension, which also saves it as an activity.
+      $params = [
+        'template_id'                  => $this->config['thanksMsgTplID'],
+        'alternative_receiver_address' => $data['email'],
+        // 'bcc'                       => "forums@artfulrobot.uk",
+        'contact_id'                   => $contactID,
+        'disable_smarty'               => 1,
+        'activity_details'             => 'tplName',
+      ];
+      civicrm_api3('Email', 'send', $params);
     }
     catch (\Exception $e) {
       // Log silently.
