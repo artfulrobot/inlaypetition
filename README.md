@@ -34,6 +34,7 @@ front end
 
 * PHP v7.3+
 * CiviCRM 5.31+
+* The Email API extension
 
 ## Installation (Web UI)
 
