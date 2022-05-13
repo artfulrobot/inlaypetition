@@ -9,6 +9,7 @@ use Civi;
 use CRM_Inlaypetition_ExtensionUtil as E;
 use CRM_Queue_Task;
 use CRM_Queue_Service;
+use CRM_Queue_Queue;
 
 class Petition extends InlayType {
 
@@ -230,7 +231,7 @@ class Petition extends InlayType {
   /**
    * @return CRM_Queue_Service
    */
-  public static function getQueueService() {
+  public static function getQueueService() :CRM_Queue_Queue {
     return CRM_Queue_Service::singleton()->create([
       'type'  => 'Sql',
       'name'  => 'inlay-petition',
@@ -526,8 +527,10 @@ class Petition extends InlayType {
       }
       else {
         // Hmmm looks dodgy.
-        Civi::log()->notice("Dodgy location received with petition submission with email: '$valid[email]': " . $location);
         $valid['location'] = mb_substr(preg_replace('@[<>\u{1f300}-\u{1f5ff}\u{e000}-\u{f8ff}]+@u', '_', $location), 0, 200) . ' (cleaned)';
+        Civi::log()->notice("Cleaned up dodgy location (received with petition submission with email: '$valid[email]'):\n"
+          . "Dodgy  : $location\n"
+          . "Cleaned: $valid[location]");
       }
     }
 
